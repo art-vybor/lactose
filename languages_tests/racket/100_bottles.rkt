@@ -2,15 +2,26 @@
 
 #lang r5rs
 
-(define bottles (lambda (n) 
-    (case n
-        (1 (display 8))
-    )
-
-    (display n)
-    (newline)
-    (cond ((> n 0) (bottles (- n 1))))
+(define get_ending (lambda (n)
+    (if (member n '(11 12 13 14))
+        "ок"     
+        (case (remainder n 10)
+            ((1) "ка")
+            ((2 3 4) "ки")
+            ((5 6 7 8 9 0) "ок")
+        )
+    )    
   )
 )
 
-(bottles 5)
+(define bottles (lambda (n) 
+    (map display (list
+        (number->string n) " бутыл" (get_ending n) " на столе.\nОдна упала...\n"
+      )
+    )
+
+    (cond ((> n 1) (bottles (- n 1))))
+  )
+)
+
+(bottles 100)
