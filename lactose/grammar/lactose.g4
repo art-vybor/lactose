@@ -1,5 +1,4 @@
-// Define a grammar called Hello
-grammar Hello;
+grammar lactose;
 r  : 'hellow' t;         // match keyword hello followed by an identifier
 t  : ID E q;
 q  : ID Q;
