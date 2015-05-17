@@ -5,8 +5,6 @@ from subprocess import call
 from lactose.grammar.lactoseParser import lactoseParser
 
 def get_tree_structure(tree):
-    
-
     index = 0
     tree_structure = {'index': index, 'children': []}
     q = [(tree_structure, tree)]
@@ -26,6 +24,9 @@ def get_tree_structure(tree):
 
                 child_structure['label'] = "{TYPE} '{TEXT}'".format(
                                                 TYPE=lactoseParser.symbolicNames[child.getSymbol().type], TEXT=text)
+                child_structure['type'] = lactoseParser.symbolicNames[child.getSymbol().type]
+                child_structure['text'] = text
+
             else:
                 q.append((child_structure, child))
 
