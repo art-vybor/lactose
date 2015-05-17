@@ -5,6 +5,7 @@ from antlr4.tree import *
 
 from lactose.grammar.lactoseLexer import lactoseLexer
 from lactose.grammar.lactoseParser import lactoseParser
+from lactose.printer import get_tree_structure, print_tree_structure_to_console, print_tree_structure_to_dot_file, print_tree_structure_to_pdf_file
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Lactose command line interface.')
@@ -16,24 +17,18 @@ def parse_args():
     
     return parser.parse_args()
 
-def print_level_order(tree, indent):
-    print '{0}{1}'.format('   '*indent, tree.text)
-    for child in tree.getChildren():
-        print_level_order(child, indent+1)
-
-def dfs_print(tree, spaces=0):
-    for child in tree.children:
-        if 'symbol' in child.__dict__:
-            print ' '*spaces + str(child)
-        else:
-            dfs_print(child, spaces+4)
-
 def main():
     args = parse_args()
 
-    input = FileStream(args.input_path)
+    in_file = '/home/avybornov/git/lactose/sample.lc'
+    out_file = '/home/avybornov/git/lactose/sample.pdf'
+
+    input = FileStream(in_file) #FileStream(args.input_path)
     lexer = lactoseLexer(input)
     stream = CommonTokenStream(lexer)
     parser = lactoseParser(stream)
-    t = parser.r()
-    dfs_print(t)
+    tree = parser.lactose_program()
+    #for child in tree.children:
+    tree_structure = get_tree_structure(tree)
+
+    print_tree_structure_to_pdf_file(tree_structure, out_file)
