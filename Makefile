@@ -1,6 +1,6 @@
 PREFIX ?= /usr/local
 BIN_DIR = $(PREFIX)/bin
-LIB_DIR = $(PREFIX)/lib/python2.7/dist-packages
+LIB_DIR = $(PREFIX)/lib/python2.7/site-packages
 
 
 INSTALL_TARGETS = install-dir install-package clean

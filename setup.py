@@ -7,4 +7,5 @@ setup(name='lactose',
             'lactose = lactose.translator:main',
         ]
       },
+      install_requires=['antlr4-python2-runtime'],
       zip_safe=False)

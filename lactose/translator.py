@@ -1,4 +1,5 @@
 import argparse
+import os
 
 from antlr4 import *
 from antlr4.tree import *
@@ -72,8 +73,8 @@ def print_lisp_tree(lisp_tree):
 def main():
     args = parse_args()
 
-    in_file = '/home/avybornov/git/lactose/sample.lc'
-    out_file = '/home/avybornov/git/lactose/sample.pdf'
+    in_file = os.path.abspath(args.input_path)
+    out_file = in_file.rsplit('.', 1)[0] + '.pdf'
 
     input = FileStream(in_file) #FileStream(args.input_path)
     lexer = lactoseLexer(input)
