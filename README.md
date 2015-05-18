@@ -1,7 +1,7 @@
 # lactose
-Syntax sugar for Scheme
+Syntax sugar for Scheme.
 
-# installation
+## installation
 To lactose installation you should use `make install` with optional PREFIX.
 Example: `PREFIX=~/.local make install`
 
