@@ -5,7 +5,7 @@ from antlr4.tree import *
 
 from lactose.grammar.lactoseLexer import lactoseLexer
 from lactose.grammar.lactoseParser import lactoseParser
-from lactose.printer import get_tree_structure, print_tree_structure_to_console, print_tree_structure_to_dot_file, print_tree_structure_to_pdf_file
+from lactose.ast import AST, ASTNode
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Lactose command line interface.')
@@ -80,11 +80,13 @@ def main():
     stream = CommonTokenStream(lexer)
     parser = lactoseParser(stream)
     tree = parser.lactose_program()
-    #for child in tree.children:
-    tree_structure = get_tree_structure(tree)
+    
+    ast_tree = AST(tree)
 
-    lisp_tree = get_lisp_tree(tree_structure['children'][0])
+    #lisp_tree = get_lisp_tree(tree_structure['children'][0])
 
-    print_lisp_tree(lisp_tree)
+    #print_lisp_tree(lisp_tree)
 
-    print_tree_structure_to_pdf_file(tree_structure, out_file)
+    ast_tree.print_to_console()
+
+    ast_tree.print_to_pdf_file(out_file)
