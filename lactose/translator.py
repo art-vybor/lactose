@@ -1,5 +1,6 @@
 import argparse
 import os
+import tempfile
 
 from antlr4 import *
 from antlr4.tree import *
@@ -76,7 +77,13 @@ def main():
     in_file = os.path.abspath(args.input_path)
     out_file = in_file.rsplit('.', 1)[0] + '.pdf'
 
-    input = FileStream(in_file) #FileStream(args.input_path)
+    #TODO переписать адекватно
+    _, tmp_file = tempfile.mkstemp(suffix='.lc')
+    with open(in_file) as f:
+        with open(tmp_file, 'w') as f1:
+            f1.write(f.read().lower())
+
+    input = FileStream(tmp_file) #FileStream(args.input_path) 
     lexer = lactoseLexer(input)
     stream = CommonTokenStream(lexer)
     parser = lactoseParser(stream)
