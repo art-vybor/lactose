@@ -2,9 +2,7 @@ grammar lactose;
 
 import r5rs_token;
 
-lactose_program
-    : token+
-    ;
+lactose_program: token*;
 
 // function_declare
 //     : NAME arguments function_body
@@ -40,4 +38,4 @@ lactose_program
 
 // EQUAL: '==';
 
-WS :   [ \t]+ -> skip;
+SPACES: [ \t]+ -> skip;

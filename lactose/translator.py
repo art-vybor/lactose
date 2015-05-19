@@ -91,4 +91,4 @@ def main():
 
     ast_tree.print_to_console()
 
-    ast_tree.print_to_pdf_file(out_file)
+    #ast_tree.print_to_pdf_file(out_file)
