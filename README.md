@@ -7,3 +7,6 @@ Example: `PREFIX=~/.local make install`
 
 To use print_to_pdf functionality graphviz package should be installed.
 Debian example: `sudo apt-get install graphviz`
+
+## restriction
+all token must be in lowercase
