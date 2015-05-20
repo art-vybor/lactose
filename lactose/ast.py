@@ -26,7 +26,6 @@ class ASTNode:
 class AST:
     def __init__(self, antlr_tree):
         self.root = self.parse(antlr_tree)
-        print map(str, self.root.children)
 
     def parse(self, antlr_tree):
         index = 0

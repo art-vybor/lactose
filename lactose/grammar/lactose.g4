@@ -3,7 +3,9 @@ grammar lactose;
 import r5rs_token;
 
 lactose_program: token*;
+// function: token (infix_operand token)*;
 
+infix_operand: '*' | '+';
 // function_declare
 //     : NAME arguments function_body
 //     ;
