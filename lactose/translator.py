@@ -77,7 +77,8 @@ def main():
     in_file = os.path.abspath(args.input_path)
     out_file = in_file.rsplit('.', 1)[0] + '.pdf'
 
-    input = FileStream(in_file) #FileStream(args.input_path) 
+    input = FileStream(in_file)
+    #input = ANTLRStringStream('123')
     lexer = lactoseLexer(input)
     stream = CommonTokenStream(lexer)
     parser = lactoseParser(stream)

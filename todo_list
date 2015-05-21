@@ -33,3 +33,8 @@
 - Написать лексер и парсер, строящий дерево.
 - Написать компилятор полученного дерева в Lisp Scheme.
 - Неплохо было бы замутить интерпретатор.
+
+antlr precedence parser:
+    https://theantlrguy.atlassian.net/wiki/display/ANTLR3/Operator+precedence+parser
+    http://stackoverflow.com/questions/1451728/antlr-operator-precedence
+    c 88 книги дракона

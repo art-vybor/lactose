@@ -62,7 +62,7 @@ fragment DIGIT_8: [0-7];
 fragment DIGIT_10: [0-9];
 fragment DIGIT_16: [0-9a-fA-F];
 
-BOOLEAN: '#t' | '#f';
+BOOLEAN: '#'T | '#'F;
 
 fragment A: 'A' | 'a';
 fragment B: 'B' | 'b';
