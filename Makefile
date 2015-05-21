@@ -10,12 +10,10 @@ install: $(INSTALL_TARGETS)
 install-dir:
 	install -d $(PREFIX) $(BIN_DIR) $(LIB_DIR)
 
-install-package: install-dir
+install-package: install-dir clean
 	java -jar ./lib/antlr-4.5-complete.jar -Dlanguage=Python2 ./lactose/grammar/lactose.g4
 	PYTHONPATH=$(LIB_DIR) python setup.py -q install --prefix=$(PREFIX)
 
-clean: install-package
+clean:
 	find . -name \*.pyc -delete
-	rm -rf build
-	rm -rf dist
-	rm -rf lactose.egg-info
+	rm -rf build dist lactose.egg-info

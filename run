@@ -1,0 +1,2 @@
+PREFIX=~/.local make install && lactose -i samples/token_test.lc
+make clean
