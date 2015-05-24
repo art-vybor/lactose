@@ -4,13 +4,14 @@ import tempfile
 from subprocess import call
 from lactose.grammar.lactoseParser import lactoseParser
 
-
 class ASTNode:
-    def __init__(self, index):
+    def __init__(self, index, text='', name=None, start=None, end=None, terminal=False, children=None):
         self.index = index
-        self.text = ''
-        self.name = ''
-        self.terminal = False
+        self.text = text
+        self.name = name
+        self.start = start
+        self.end = end
+        self.terminal = terminal
         self.children = []
 
     def __str__(self):
@@ -35,23 +36,24 @@ class AST:
         while stack:
             ast_node, node = stack.pop()
             ast_node.name = lactoseParser.ruleNames[node.getRuleIndex()]
+            #print ast_node.name, node.children
+            if node.children:
+                for child in node.children:
+                    index += 1
+                    ast_child = ASTNode(index=index, start=antlr_tree.start, end=antlr_tree.stop)
+                    ast_node.add(ast_child)
 
-            for child in node.children:
-                index += 1
-                ast_child = ASTNode(index=index)
-                ast_node.add(ast_child)
-
-                if 'symbol' in child.__dict__: # is terminal
-                    ast_child.terminal = True
-                    ast_child.text, _ = escape_encode(str(child.getSymbol().text))
-                    ast_child.name = lactoseParser.symbolicNames[child.getSymbol().type]
-                else:
-                    stack.append((ast_child, child))
+                    if 'symbol' in child.__dict__: # is terminal
+                        ast_child.terminal = True
+                        ast_child.text, _ = escape_encode(str(child.getSymbol().text))
+                        ast_child.name = lactoseParser.symbolicNames[child.getSymbol().type]
+                    else:
+                        stack.append((ast_child, child))
         return root
 
     def print_to_console(self):
         def print_node(node, spaces=0):
-            print ' '*spaces + str(node)
+            print ' '*spaces + str(node) + ' - ' + 'terminal' if str(node.terminal) else ''
             for child in node.children:
                 print_node(child, spaces+4)
     

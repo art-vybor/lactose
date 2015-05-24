@@ -2,15 +2,15 @@ grammar r5rs_token;
 //lisp token parser according to the r5rs standart
 
 
-token: IDENTIFIER | BOOLEAN | number | CHARACTER | STRING;
+//token: IDENTIFIER | BOOLEAN | number | CHARACTER | STRING;
+token: IDENTIFIER | BOOLEAN | NUMBER | CHARACTER | STRING;
 
-IDENTIFIER: INITIAL SUBSEQUENT* | PERCULIAR_INDENTIFIER;
-fragment INITIAL: LETTER | SPECIAL_INITIAL;
+IDENTIFIER: INITIAL SUBSEQUENT*;
+fragment INITIAL: LETTER;// | SPECIAL_INITIAL;
 fragment LETTER: [a-zA-Z];
-fragment SPECIAL_INITIAL: [!$%&*/:<=>?^_~];
-fragment SUBSEQUENT: INITIAL | DIGIT_10 | SPECIAL_SUBSEQUENT;
+fragment SPECIAL_INITIAL: [$:?_];
+fragment SUBSEQUENT: INITIAL | DIGIT_10; //| SPECIAL_SUBSEQUENT;
 fragment SPECIAL_SUBSEQUENT: [+-.@];
-fragment PERCULIAR_INDENTIFIER: [+-] | '...';
 
 CHARACTER: '#\\' . | '#\\' CHARACTER_NAME ;
 fragment CHARACTER_NAME: S P A C E | N E W L I N E;
@@ -18,32 +18,32 @@ fragment CHARACTER_NAME: S P A C E | N E W L I N E;
 STRING: '"' STRING_ELEMENT* '"';
 fragment STRING_ELEMENT: ~('"' | '\\') | '\\"' | '\\\\';
 
-number: NUM_2 | NUM_8 | NUM_10 | NUM_16;
-NUM_2: PREFIX_2 COMPLEX_2;
+NUMBER: NUM_2 | NUM_8 | NUM_10 | NUM_16;
+fragment NUM_2: PREFIX_2 COMPLEX_2;
 fragment COMPLEX_2: REAL_2 | REAL_2 '@' REAL_2 | REAL_2 '+' UREAL_2 I | REAL_2 '-' UREAL_2 I | REAL_2 '+' I
                   | REAL_2 '-' I | '+' UREAL_2 I | '-' UREAL_2 I | '+' I | '-' I;
-fragment REAL_2: SIGN UREAL_2;
+fragment REAL_2:  UREAL_2;
 fragment UREAL_2: UINTEGER_2 | UINTEGER_2 '/' UINTEGER_2;
 fragment UINTEGER_2: DIGIT_2+ '#'*;
 fragment PREFIX_2: RADIX_2 EXACTNESS | EXACTNESS RADIX_2;
-NUM_8: PREFIX_8 COMPLEX_8;
+fragment NUM_8: PREFIX_8 COMPLEX_8;
 fragment COMPLEX_8: REAL_8 | REAL_8 '@' REAL_8 | REAL_8 '+' UREAL_8 I | REAL_8 '-' UREAL_8 I | REAL_8 '+' I 
                   | REAL_8 '-' I | '+' UREAL_8 I | '-' UREAL_8 I | '+' I | '-' I;
-fragment REAL_8: SIGN UREAL_8;
+fragment REAL_8:  UREAL_8;
 fragment UREAL_8: UINTEGER_8 | UINTEGER_8 '/' UINTEGER_8;
 fragment UINTEGER_8: DIGIT_8+ '#'*;
 fragment PREFIX_8: RADIX_8 EXACTNESS | EXACTNESS RADIX_8;
-NUM_10: PREFIX_10 COMPLEX_10;
+fragment NUM_10: PREFIX_10 COMPLEX_10;
 fragment COMPLEX_10: REAL_10 | REAL_10 '@' REAL_10 | REAL_10 '+' UREAL_10 I | REAL_10 '-' UREAL_10 I 
                   | REAL_10 '+' I | REAL_10 '-' I | '+' UREAL_10 I | '-' UREAL_10 I | '+' I | '-' I;
-fragment REAL_10: SIGN UREAL_10;
+fragment REAL_10:  UREAL_10;
 fragment UREAL_10: UINTEGER_10 | UINTEGER_10 '/' UINTEGER_10 | DECIMAL_10;
 fragment UINTEGER_10: DIGIT_10+ '#'*;
 fragment PREFIX_10: RADIX_10 EXACTNESS | EXACTNESS RADIX_10;
-NUM_16: PREFIX_16 COMPLEX_16;
+fragment NUM_16: PREFIX_16 COMPLEX_16;
 fragment COMPLEX_16: REAL_16 | REAL_16 '@' REAL_16 | REAL_16 '+' UREAL_16 I | REAL_16 '-' UREAL_16 I 
                    | REAL_16 '+' I | REAL_16 '-' I | '+' UREAL_16 I | '-' UREAL_16 I | '+' I | '-' I;
-fragment REAL_16: SIGN UREAL_16;
+fragment REAL_16:  UREAL_16;
 fragment UREAL_16: UINTEGER_16 | UINTEGER_16 '/' UINTEGER_16;
 fragment UINTEGER_16: DIGIT_16+ '#'*;
 fragment PREFIX_16: RADIX_16 EXACTNESS | EXACTNESS RADIX_16;

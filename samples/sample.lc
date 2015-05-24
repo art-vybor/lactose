@@ -1,7 +1,19 @@
-2 + 2 * 2
+-- sandbox
+p |< < #t = -10
 
+--sign x | x > 0 = 1
+--       | x == 0 = 0
+--       | x < 0 = -1
 
-sign x | x > 0 = 1
-        | x == 0 = 0
-        | x < 0  = -1
-        
+--abs x | x >= 0 = x
+--      | x < 0 = -x
+
+-- abs1 x | sign x * x
+
+--display sign (p) 
+--(newline)
+
+--display abs (p)
+--(newline)
+
+--display abs 100

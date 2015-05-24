@@ -1,13 +1,24 @@
+#from __future__ import print_function
 import argparse
 import os
 import tempfile
 
+
+from antlr4.error.ErrorListener import ConsoleErrorListener
 from antlr4 import *
 from antlr4.tree import *
 
 from lactose.grammar.lactoseLexer import lactoseLexer
 from lactose.grammar.lactoseParser import lactoseParser
-from lactose.ast import AST, ASTNode
+from lactose.ast import AST
+from lactose.lisp_tree import LispTree
+from lactose.exception import LactoseSyntaxError
+
+class AdvancedErrorListener(ConsoleErrorListener):
+    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
+        raise LactoseSyntaxError(line, column, msg)
+
+AdvancedErrorListener.INSTANCE = AdvancedErrorListener()
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Lactose command line interface.')
@@ -19,77 +30,51 @@ def parse_args():
     
     return parser.parse_args()
 
-def get_lisp_tree(tree_structure):
-    lisp_tree = []
-
-    print tree_structure['label']
-    if tree_structure['label'] == 'function_declare':
-        func_elems = tree_structure['children']
-        lisp_tree.append('define')
-        sublist = []
-        sublist.append(func_elems[0]['text'])
-        sublist.extend([arg['text'] for arg in func_elems[1]['children']])
-        lisp_tree.append(sublist)
-        lisp_tree.append(get_lisp_tree(func_elems[2]))
-
-    elif tree_structure['label'] == 'function_body':
-
-        lisp_tree.append('cond')
-        for _child in tree_structure['children']:
-            if _child['label'] == 'function_branch':
-                lisp_subtree = []
-                lisp_subtree.append(get_lisp_tree(_child['children'][0]))
-                lisp_subtree.append(_child['children'][2]['text'])
-                lisp_tree.append(lisp_subtree)
-
-    elif tree_structure['label'] == 'condition':
-        print 1
-        if tree_structure['children'][1]['type'] == 'EQUAL':
-            lisp_tree.append('=')
-        elif tree_structure['children'][1]['type'] == 'LESS':
-            lisp_tree.append('<')
-        elif tree_structure['children'][1]['type'] == 'MR':
-            lisp_tree.append('>')
-        lisp_tree.append(tree_structure['children'][0]['text'])
-        lisp_tree.append(tree_structure['children'][2]['text'])
-
-
-
-            #get_lisp_tree(child)
-
-        #if 'text' in child:
-            #print child['text']
-    return lisp_tree
-
-def print_lisp_tree(lisp_tree):
-    print '(',
-    for elem in lisp_tree:
-        if isinstance(elem, list):
-            print_lisp_tree(elem)
-        else:
-            print elem,
-    print ')',
-
-
 def main():
+    #raise SyntaxError('asdasddas')
     args = parse_args()
 
     in_file = os.path.abspath(args.input_path)
     out_file = in_file.rsplit('.', 1)[0] + '.pdf'
+    out_lisp_file = in_file.rsplit('.', 1)[0] + '.rkt'
 
+    # input = FileStream(in_file)
+
+    # lexer = lactoseLexer(input)
+    # for x in map(lambda x: '%s %s' % (str(x), lactoseParser.symbolicNames[x.type]), lexer.getAllTokens()):
+    #     print x
     input = FileStream(in_file)
-    #input = ANTLRStringStream('123')
+
     lexer = lactoseLexer(input)
-    stream = CommonTokenStream(lexer)
-    parser = lactoseParser(stream)
-    tree = parser.lactose_program()
     
+    stream = CommonTokenStream(lexer)
+    
+
+    parser = lactoseParser(stream)
+    parser._listeners=[AdvancedErrorListener.INSTANCE]
+        
+    tree = parser.lactose_program()
+    #print 'errors: ', parser._syntaxErrors
+    #print 2
     ast_tree = AST(tree)
 
-    #lisp_tree = get_lisp_tree(tree_structure['children'][0])
+    #print ast_tree.root.children
 
-    #print_lisp_tree(lisp_tree)
-
-    ast_tree.print_to_console()
+    
+    #ast_tree.print_to_console()
 
     #ast_tree.print_to_pdf_file(out_file)
+
+    tree = LispTree(ast_tree)
+    #print tree.tree
+
+    with open(out_lisp_file, 'w') as f:
+        f.write('#lang r5rs\n')
+        f.write(str(tree))
+        f.write('(newline)')
+
+    from subprocess import call
+    #call(['racket', out_lisp_file])
+
+
+    #print tree
