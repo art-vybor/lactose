@@ -9,8 +9,8 @@ class LispTree():
             parse_child = ''
             if child.name == 'function':
                 parse_child = self.parse_function(child)
-            elif child.name == 'expression':
-                parse_child = self.parse_expression(child)
+            elif child.name == 'function_call':
+                parse_child = self.parse_function_call(child)
             elif child.name == 'NEWLINE':
                 continue
             else:
@@ -58,11 +58,10 @@ class LispTree():
         if len(children) == 1:
             if children[0].name == 'token':
                 return self.parse_token(children[0])
-            if children[0].name == 'function_call':
-                return self.parse_function_call(children[0])
+            # if children[0].name == 'function_call':
+            #     return self.parse_function_call(children[0])
         elif len(children) == 3 and children[0].text == '(' and children[2].text == ')':
-            return [self.parse_expression(children[1])]
-
+            return self.parse_expression(children[1])
 
         expression = []
         terminals = filter(lambda x: x.terminal, children)
@@ -70,6 +69,7 @@ class LispTree():
 
         if len(terminals) == 1: #expression func
             expression.append(map_expression_function[terminals[0].text])
+            #print expression
         else:
             print 'ERROR: undefined symbol in expression: %s' % terminals[0].text
 
@@ -81,11 +81,11 @@ class LispTree():
     def parse_function_call(self, ast_tree):
         children = ast_tree.children
 
-        if len(children) == 1:
-            return self.parse_token(children[0])
+        # if len(children) == 1:
+        #     return self.parse_token(children[1])
         function_call = []
-        function_call.append(self.parse_token(children[0]))
-        for child in children[1:]:
+        function_call.append(self.parse_token(children[1]))
+        for child in children[2:-1]:
             if not child.terminal:
                 function_call.append(self.parse_expression(child))
         return function_call

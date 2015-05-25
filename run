@@ -1,2 +1,2 @@
-PREFIX=~/.local make install && lactose -i samples/sample.lc
+lactose -i samples/sample.lc --stack_trace --lexems --pdf_tree
 # make clean

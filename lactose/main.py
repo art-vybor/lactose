@@ -29,6 +29,9 @@ def parse_args():
     if not args.output_file:
         args.output_file = replace_filename_extension(args.input_file, 'rkt')
 
+    if args.format:
+        print 'format functionality not released yet'
+
     return args
 
 
