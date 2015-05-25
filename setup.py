@@ -4,7 +4,7 @@ setup(name='lactose',
       packages=find_packages(),
       entry_points = {
         'console_scripts': [
-            'lactose = lactose.translator:main',
+            'lactose = lactose.main:main',
         ]
       },
       install_requires=['antlr4-python2-runtime'],

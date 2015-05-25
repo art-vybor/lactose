@@ -4,7 +4,6 @@ import r5rs_token;
 
 lactose_program: (function NEWLINE?| expression NEWLINE | COMMENT | NEWLINE)*;
 
-
 expression 
     : function_call
     |'(' expression ')' 
