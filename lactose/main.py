@@ -47,7 +47,7 @@ def main():
         for lexem in lexems:
             print '{LEXEM} {LEXEM_NAME}'.format(LEXEM=str(lexem),LEXEM_NAME=get_token_name(lexem))
 
-    ast_tree = get_ast_tree(args.input_file)
+    ast_tree = get_ast_tree(filepath=args.input_file)
 
     if args.console_tree:
         ast_tree.print_to_console()

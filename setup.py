@@ -8,4 +8,5 @@ setup(name='lactose',
         ]
       },
       install_requires=['antlr4-python2-runtime'],
-      zip_safe=False)
+      zip_safe=False,
+      test_suite="tests")
