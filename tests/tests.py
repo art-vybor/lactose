@@ -1,6 +1,6 @@
 import unittest
 from tempfile import mkstemp
-from lactose.lactose_compiler import get_ast_tree, compile_to_string
+from lactose.compiler import get_ast_tree, compile_to_string
 
 
 def compile_from_string_to_string(string):

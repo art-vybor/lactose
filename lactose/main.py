@@ -2,7 +2,7 @@ import sys
 import argparse
 from subprocess import call
 
-from lactose.lactose_compiler import get_lexer, get_lexems, get_ast_tree, get_token_name, compile_to_file
+from lactose.compiler import get_lexems, get_ast_tree, get_token_name, compile_to_file
 
 
 def replace_filename_extension(filepath, extension):

@@ -3,7 +3,10 @@ from lactose.exception.errors import LactoseSyntaxError
 
 
 class AntlrErrorListener(ConsoleErrorListener):
+    errors = 0
+
     def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
-        raise LactoseSyntaxError(line, column, msg)
+        self.errors += 1
+        print LactoseSyntaxError(line, column, msg)
 
 AntlrErrorListener.INSTANCE = AntlrErrorListener()
