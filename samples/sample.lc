@@ -1,6 +1,37 @@
 -- sandbox
 
-(f 2*(2+2))
+-- sample functions
+
+--inc = \x -> x+1
+
+--sum_of_squares1 = \x y -> x**2 + y**2
+
+--sum_of_squares = \x y -> (sqr x) + sqr y
+
+
+--f = \-> (\x -> x + 1) 1
+
+
+--fact = \n -> if n == 0
+--                1
+--                n*fact(n-1)
+--cycloid = \x -> abs (sin x)
+
+--test_if = \x -> if x > 0 
+--                    if x > 1
+--                        2 
+--                        3
+--                    1
+
+fact = \n ->
+   loop = \i -> if i < n i*(loop i+1) n;
+   loop 1
+
+fact n =
+   loop i = if i < n i*(loop i+1) n;
+   loop 1
+
+-- (f 2*(2+2))
 
 
 --p | #t = -10 
