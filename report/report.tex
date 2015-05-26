@@ -1,0 +1,265 @@
+% utf-8 ru, unix eolns
+\documentclass[12pt,a4paper,oneside]{extarticle}
+    \righthyphenmin=2 %минимально переносится 2 символа %%%
+    \sloppy
+
+% Рукопись оформлена в соответствии с правилами оформления 
+% электронной версии авторского оригинала, 
+% принятыми в Издательстве МГТУ им. Н.Э. Баумана.
+
+\usepackage{geometry} % А4, примерно 28-31 строк(а) на странице 
+    \geometry{paper=a4paper}
+    \geometry{includehead=false} % Нет верх. колонтитула
+    \geometry{includefoot=true}  % Есть номер страницы
+    \geometry{bindingoffset=0mm} % Переплет    : 0  мм
+    \geometry{top=20mm}          % Поле верхнее: 20 мм
+    \geometry{bottom=25mm}       % Поле нижнее : 25 мм 
+    \geometry{left=25mm}         % Поле левое  : 25 мм
+    \geometry{right=25mm}        % Поле правое : 25 мм
+    \geometry{headsep=10mm}  % От края до верх. колонтитула: 10 мм
+    \geometry{footskip=20mm} % От края до нижн. колонтитула: 20 мм 
+
+\usepackage{cmap}
+\usepackage[T2A]{fontenc} 
+\usepackage[utf8x]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{misccorr}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+%\usepackage{cm-super} %человеческий рендер русских шрифтов
+
+\setlength{\parindent}{1.25cm}  % Абзацный отступ: 1,25 см
+\usepackage{indentfirst}        % 1-й абзац имеет отступ
+
+\usepackage{setspace}   
+
+\onehalfspacing % Полуторный интервал между строками
+
+\makeatletter
+\renewcommand{\@oddfoot }{\hfil\thepage\hfil} % Номер стр.
+\renewcommand{\@evenfoot}{\hfil\thepage\hfil} % Номер стр.
+\renewcommand{\@oddhead }{} % Нет верх. колонтитула
+\renewcommand{\@evenhead}{} % Нет верх. колонтитула
+\makeatother
+
+\usepackage{fancyvrb}
+
+
+\usepackage[pdftex]{graphicx}  % поддержка картинок для пдф
+\graphicspath{ {./pictures/} }
+\usepackage{rotating}
+%\DeclareGraphicsExtensions{.jpg,.png}
+
+
+
+
+\renewcommand{\labelenumi}{\theenumi.} %меняет вид нумерованного списка
+
+\usepackage{perpage} %нумерация сносок 
+\MakePerPage{footnote}
+
+\usepackage[all]{xy} %поддержка графов
+
+\usepackage{listings} %листинги
+
+
+\usepackage{url}
+
+
+\usepackage{tikz} %для рисования графиков
+\usepackage{pgfplots}
+
+
+\usepackage{ccaption}%изменяет подпись к рисунку
+\makeatletter 
+\renewcommand{\fnum@figure}[1]{Рисунок~\thefigure~---~\sffamily}
+\makeatother
+
+\begin{document}
+\pgfplotsset{compat=1.8}
+
+\thispagestyle{empty}
+\newpage
+{
+\centering
+
+
+\textbf{
+МОСКОВСКИЙ ГОСУДАРСТВЕННЫЙ ТЕХНИЧЕСКИЙ УНИВЕРСИТЕТ ИМЕНИ Н. Э. БАУМАНА \\
+Факультет информатики и систем управления \\
+Кафедра теоретической информатики и компьютерных технологий}
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+\bigskip
+
+\vfill
+
+
+Курсовой проект \\
+по курсу <<Компиляторы>>
+
+\bigskip
+
+{\large <<Syntax sugar for Scheme>>}
+\bigskip
+
+\vfill
+
+
+
+\hfill\parbox{4cm} {
+Выполнил:\\
+студент ИУ9-101 \hfill \\
+Выборнов А. И.\hfill \medskip\\
+Руководитель:\\
+Дубанов А. В.\hfill
+}
+
+
+\vspace{\fill}
+
+Москва \number\year
+\clearpage
+}
+
+
+\tableofcontents
+
+\clearpage
+
+
+\section*{Введение}
+\addcontentsline{toc}{section}{Введение}
+    В двух словах о крутости лиспа и избыточности скобочек
+\clearpage
+
+\section{Теоретическая часть}
+    \subsection{Lisp}
+        Поподробнее про лисп.
+    \subsection{Функционал входного языка}
+        вступленние
+        программа представляет собой список из определений функций и их вызовов
+
+        мб ввести main и оставить только определение функций?
+
+        \subsubsection{символы}
+            как в лиспе, за исключением... 
+            примеры
+        \subsubsection{функции}
+            1)sign x  | x > 0  = 1 (multiwayif)
+
+                | x == 0 = 0
+
+                | x < 0  = -1
+            2) sign 0 = 0 
+            sign a = if a > 0 then 1 else -1
+
+            пример на Algebraic data type ?! я не работаю с типами :(
+
+            3) \\x y -> x+y 
+
+            какой должен быть вызов функции? мб сделать lisp-style?
+        \subsubsection{условия}
+            if a then b else c
+
+        \subsubsection{variable bindings}
+            where ...
+        \subsubsection{инфиксная арифметика}
+            при чём тут guile?
+        \subsubsection{определение функций на scheme}
+            мб вида: sign x: scheme (scheme body) ?
+
+        
+\clearpage
+
+\section{Объекты и методы}
+\label{sec:configuration} 
+        \noindent Характеристики программного обеспечения:
+        \begin{itemize}
+            \item Операционная система --- ОpenSUSE 12.2 x86\textunderscore 64.
+            \item Язык программирования --- Python 2.7.3.
+        \end{itemize}
+        
+        \noindent Характеристики оборудования:
+        \begin{itemize}
+            \item Процессор --- Intel Core 2 Duo E6550 2.33 Гц 2 ядра.
+            \item Оперативная память --- 2 Гбайт DDR2.
+        \end{itemize}
+\clearpage
+
+\section{Реализация}
+    \subsection{Используемые технологии}
+        \subsubsection{ANTLR}
+            что круто, а что не очень
+            обязательно про минусы python версии
+        \subsubsection{graphviz}
+            ...
+        \subsubsection{тестирование}
+            ...
+        \subsubsection{сборка пакета}
+            ...
+
+    \subsubsection{Детали реализации}
+        общая структура:
+
+        $входной файл -> antlr syntax tree -> AST -> lisp_tree -> lisp_file$
+
+        особоенности каждого этапа преобразования
+        \subsubsection{Обработка ошибок}
+            сделано
+        \subsubsection{Видимость символов}
+            увы нет, надо обязательно доделать
+        
+    \subsection{Интерфейс}
+        CLI все дела
+
+        примеры использования
+
+        
+
+\clearpage
+
+\section{Тестирование}
+хз    
+\clearpage
+
+\section{Заключение}
+    Что получилось. Привнесена няшность, но возможности далеко не такие как были.
+\clearpage
+
+
+\begin{thebibliography}{0}
+\addcontentsline{toc}{section}{Список литературы}
+    \bibitem{r5rs} стандарт r5rs
+    \bibitem{dragon} axо ульман книга дракона
+    \bibitem{antlrs} какая нибудь дока по antlr
+
+    \bibitem{mapreduce}
+        Jeffrey Dean, Sanjay Ghemawat. MapReduce: Simplified Data Processing on Large Clusters~//~Google, Inc.~---~2004.
+
+    \bibitem{problem}
+        MapReduce~//~slideshare: URL: \newline
+        http://www.slideshare.net/yandex/mapreduce-12321523
+
+    \bibitem{serialize}
+        What is the most efficient way to serialize in Python?~//~Quora: URL:  \newline
+        http://www.quora.com/What-is-the-most-efficient-way-to-serialize-in-Python
+
+    \bibitem{mr_tasks}
+        Hadoop save the World?~//~CODE1NSTINCT: URL:  \newline
+        http://www.codeinstinct.pro/2012/08/hadoop-design.html
+
+    \bibitem{mr_patterns}
+        MapReduce Patterns, Algorithms, and Use Cases~//~Highly Scalable Blog: URL:  \newline
+        https://highlyscalable.wordpress.com/2012/02/01/mapreduce-patterns/
+        
+\end{thebibliography}
+
+\end{document}
