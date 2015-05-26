@@ -30,3 +30,6 @@ Priorities:
 
 ##books
 R5RS standart: http://www.schemers.org/Documents/Standards/R5RS/r5rs.pdf
+
+##error
+make не прерывается при ошибке в setup.py

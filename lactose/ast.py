@@ -20,9 +20,8 @@ class ASTNode:
         else:
             return self.name
 
-    def add(self, child):
+    def push(self, child):
         self.children.append(child)
-
 
 class AST:
     def __init__(self, antlr_tree):
@@ -41,7 +40,7 @@ class AST:
                 for child in node.children:
                     index += 1
                     ast_child = ASTNode(index=index, start=antlr_tree.start, end=antlr_tree.stop)
-                    ast_node.add(ast_child)
+                    ast_node.push(ast_child)
 
                     if 'symbol' in child.__dict__: # is terminal
                         ast_child.terminal = True

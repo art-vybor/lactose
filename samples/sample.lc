@@ -15,7 +15,7 @@
 --fact = \n -> if n == 0
 --                1
 --                n*fact(n-1)
---cycloid = \x -> abs (sin x)
+cycloid = \x -> abs (sin x)
 
 --test_if = \x -> if x > 0 
 --                    if x > 1
@@ -23,13 +23,13 @@
 --                        3
 --                    1
 
-fact = \n ->
-   loop = \i -> if i < n i*(loop i+1) n;
-   loop 1
+--fact = \n ->
+--   loop = \i -> if i < n i*(loop i+1) n;
+--   loop 1
 
-fact n =
-   loop i = if i < n i*(loop i+1) n;
-   loop 1
+--fact n =
+--   loop i = if i < n i*(loop i+1) n;
+--   loop 1
 
 -- (f 2*(2+2))
 
