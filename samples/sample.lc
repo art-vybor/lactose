@@ -2,20 +2,25 @@
 
 -- sample functions
 
+--f1 = 1
+--f2 = 1+2
+--f3 x = x + 1
+
 --inc = \x -> x+1
 
 --sum_of_squares1 = \x y -> x**2 + y**2
 
---sum_of_squares = \x y -> (sqr x) + sqr y
+--sqr x = x**2
+sum_of_squares = \x y -> (sqr x) + sqr y;
 
 
---f = \-> (\x -> x + 1) 1
+f = \-> (\x -> x + 1) 1;
 
 
 --fact = \n -> if n == 0
 --                1
 --                n*fact(n-1)
-cycloid = \x -> abs (sin x)
+--cycloid = \x -> abs (sin x)
 
 --test_if = \x -> if x > 0 
 --                    if x > 1
@@ -23,32 +28,27 @@ cycloid = \x -> abs (sin x)
 --                        3
 --                    1
 
---fact = \n ->
+--fact1 = \n ->
 --   loop = \i -> if i < n i*(loop i+1) n;
 --   loop 1
 
---fact n =
+--fact2 n =
 --   loop i = if i < n i*(loop i+1) n;
 --   loop 1
 
--- (f 2*(2+2))
+--main = 
+--    inc 1
+--    inc 1.2
 
+--    sum_of_squares1 2 2
+--    sum_of_squares 2 2
 
---p | #t = -10 
+--    f
 
---sign x | x > 0 = 1
---       | x == 0 = 0
---       | x < 0 = -1
+--    cycloid 1
 
---abs x | x >= 0 = x
---      | x < 0 = -x
+--    test_if 3
 
--- abs1 x | sign x * x
-
---display sign (p) 
---(newline)
-
---display abs (p)
---(newline)
-
---display abs 100
+--    fact 5
+--    fact 1 5
+--    fact 2 5

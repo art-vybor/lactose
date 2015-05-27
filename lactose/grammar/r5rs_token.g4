@@ -2,7 +2,6 @@ grammar r5rs_token;
 //lisp token parser according to the r5rs standart
 
 
-//token: IDENTIFIER | BOOLEAN | number | CHARACTER | STRING;
 token: IDENTIFIER | BOOLEAN | NUMBER | CHARACTER | STRING;
 
 IDENTIFIER: INITIAL SUBSEQUENT*;
