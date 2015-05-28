@@ -2,14 +2,14 @@ grammar r5rs_token;
 //lisp token parser according to the r5rs standart
 
 
-token: IDENTIFIER | BOOLEAN | NUMBER | CHARACTER | STRING;
-
 IDENTIFIER: INITIAL SUBSEQUENT*;
 fragment INITIAL: LETTER | SPECIAL_INITIAL;
 fragment LETTER: [a-zA-Z];
 fragment SPECIAL_INITIAL: [$:?_];
 fragment SUBSEQUENT: INITIAL | DIGIT_10; //| SPECIAL_SUBSEQUENT;
 fragment SPECIAL_SUBSEQUENT: [+-.@];
+
+token: BOOLEAN | NUMBER | CHARACTER | STRING;
 
 CHARACTER: '#\\' . | '#\\' CHARACTER_NAME ;
 fragment CHARACTER_NAME: S P A C E | N E W L I N E;

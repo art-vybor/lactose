@@ -7,7 +7,7 @@ parse: function_define*;
 expression 
     : '(' expression ')' 
     | if_condition
-    | ('+'|'-') expression
+    //| ('+'|'-') expression
     | ('not'|'~') expression
     | expression '**' expression
     | expression ('*'|'/'|'%'|'//') expression
@@ -20,16 +20,17 @@ expression
     | expression 'or' expression
     | expression ('<' | '<=' | '>' | '>=') expression
     | expression ('==' | '!=') expression
-    | token
     | function_call
     | lambda_function_call
+    | token
+    
     ;
 function_call: IDENTIFIER expression*;
 lambda_function_call: lambda_function expression*;
 
 if_condition: 'if' expression expression expression;
 
-function_define: function_define_by_lambda | function_define_default;
+function_define: 'def' (function_define_by_lambda | function_define_default);
 function_define_by_lambda: IDENTIFIER '=' lambda_function;
 function_define_default: IDENTIFIER function_arguments '=' function_body;
 

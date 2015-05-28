@@ -1,0 +1,196 @@
+% utf-8 ru, unix eolns
+\documentclass[12pt,a4paper,oneside]{extarticle}
+    \righthyphenmin=2 %минимально переносится 2 символа
+    \sloppy
+
+\usepackage{geometry} % А4, примерно 28-31 строк(а) на странице 
+    \geometry{paper=a4paper}
+    \geometry{includehead=false} % Нет верх. колонтитула
+    \geometry{includefoot=true}  % Есть номер страницы
+    \geometry{bindingoffset=0mm} % Переплет    : 0  мм
+    \geometry{top=20mm}          % Поле верхнее: 20 мм
+    \geometry{bottom=25mm}       % Поле нижнее : 25 мм 
+    \geometry{left=30mm}         % Поле левое  : 30 мм (статья)
+    \geometry{right=30mm}        % Поле правое : 30 мм (статья)
+    \geometry{headsep=10mm}  % От края до верх. колонтитула: 10 мм
+    \geometry{footskip=20mm} % От края до нижн. колонтитула: 20 мм 
+
+\usepackage{cmap}
+\usepackage[T2A]{fontenc} 
+\usepackage[utf8x]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{misccorr}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\setlength{\parindent}{1.25cm}  % Абзацный отступ: 1,25 см
+\usepackage{indentfirst}        % 1-й абзац имеет отступ
+
+\usepackage{setspace}   
+
+\onehalfspacing % Полуторный интервал между строками
+
+\usepackage{clrscode}% псевдокод 
+
+\makeatletter
+\renewcommand{\@oddfoot }{\hfil\thepage\hfil} % Номер стр.
+\renewcommand{\@evenfoot}{\hfil\thepage\hfil} % Номер стр.
+\renewcommand{\@oddhead }{} % Нет верх. колонтитула
+\renewcommand{\@evenhead}{} % Нет верх. колонтитула
+\makeatother
+
+\usepackage{fancyvrb}
+
+\usepackage[pdftex]{graphicx}  % поддержка картинок 
+   \usepackage{epstopdf}
+   \DeclareGraphicsRule{.eps}{pdf}{.pdf}{`epstopdf #1}
+
+
+\usepackage{syntax} %для поддержки рбнф
+\setlength{\grammarindent}{12em} %устанавливает нужный отступ перед ::=
+\setlength{\grammarparsep}{6pt plus 1pt minus 1pt}  %сокращает расстояние между правилами
+
+\renewcommand{\labelenumi}{\theenumi.} %меняет вид нумерованного списка
+
+\usepackage{perpage} %нумерация сносок 
+\MakePerPage{footnote}
+
+\usepackage[all]{xy} %поддержка графов
+
+\usepackage{listings} %поддержка листингов
+\lstset{language=Haskell, numbers=left}
+
+%
+% Обычный размер шрифта в заголовках
+%
+\usepackage[explicit]{titlesec} 
+\titleformat{\section}{\normalfont\bfseries}{\thesection.}{0.5em}{#1}
+\titleformat{\subsection}{\normalfont\bfseries}{\thesubsection.}{0.5em}{#1}
+\titleformat{\subsubsection}{\normalfont\bfseries}{\thesubsection.}{0.5em}{#1}
+
+
+\begin{document}
+\noindent УДК ...
+\bigskip
+
+\noindent\textbf{Препроцессор синаксического сахара для языка Scheme}
+
+\noindent МГТУ им. Н.Э.Баумана\\
+Выборнов А.И., Дубанов А.В.\\
+art-vybor@ya.ru; qrcs@mail.ru
+
+\noindent\textbf{Аннотация.} В работе рассмотрены создание препроцессора для языка Scheme и разработка входного языка для препроцессора. Препроцессор реализован в виде приложения с консольным интерфейсом. Исходные тексты проекта доступны по адресу: https://github.com/art-vybor/lactose
+
+\noindent\textbf{Ключевые слова:} Lisp, Scheme, Синтаксический сахар, Компилятор, Препроцессор.
+
+\bigskip
+
+\noindent\textbf{Введение.}
+Язык Lisp создавался в ходе работ по созданию искусственного интеллекта, но сейчас сфера его применения выходит далеко за пределы этой узкой области. Lisp это функциональный язык с динамической системой типов.
+Его отличительной особенностью является то, что программы и данные являются списками символов.
+Программа на языке Lisp представляет собой уже синтаксическое дерево, что облегчает создание парсеров этого языка.
+
+В настоящее время Lisp представляет собой целое семейство языков программирования.
+В данной работе рассматривается Scheme~---~один из наиболее известных диалектов Lisp.
+В Scheme упор был сделан на простоту языка~---~в нём содержиться минимальное количество примитивных конструкций, которые, тем не менее, позволяют выразить любой требуемый функционал.
+
+Несмотря на простоту языка Scheme, он перегружен большим количеством скобок.
+Также Scheme не поддерживает инфиксную запись выражений, что, к примеру, не позволяет записывать арифметические выражения в привычном виде.
+С другой стороны такие современные языки программирования как Haskell, Python или Erlang, позволяют писать более удобочитаемый код.
+
+В рамках данной работы была сделана попытка освежить Sсheme, добавить ему элегантности, сделать код более удобочитаемым.
+Для этого был разработан входной язык, обладающий синтаксическим сахаром, позаимствованным из Haskell и Python.
+С помощью написанного препроцессора, входной язык комплируется в Sсheme.
+
+\noindent\textbf{Входной язык препроцессора.}
+Программа на входном языке представляет собой множество функций. Переменные также являются функциями. Если в корне программы присутствует объявление функции main~---~то эта функция будет интерпретирована как точка входа. Можно определять функции на Scheme. Токены языка представляют собой токены на языке Sсheme.
+
+Рассмотрим более подробное описание входного языка:
+    
+    символы как в лиспе, за исключением... , так как инфиксная арифметика нужна. Пример:
+    \begin{lstlisting}[mathescape] 
+#t 123 #b010  "abc"  #\a  
+    \end{lstlisting}
+
+    инфиксные выражения. условия, вызовы функций, объявления функций тоже являются выражениями. приоритеты операций. Пример:
+    \begin{lstlisting}[mathescape] 
+2+2*2
+(2+2)*2
+    \end{lstlisting}
+    
+
+    условия Пример:
+    \begin{lstlisting}[mathescape] 
+if a then b else c
+    \end{lstlisting}
+     
+    объявление функции - набор выражений разделённых ; последнее возвращается. Ключевое слово def. Пример:
+    \begin{lstlisting}[mathescape] 
+def fact n =
+    def loop i = if i < n then i*(loop i+1) else n;
+    loop 1
+    \end{lstlisting}
+
+    вызов функции. Пример:
+    \begin{lstlisting}[mathescape] 
+g (f a b)
+    \end{lstlisting}
+
+    вставка кода scheme 
+    \begin{lstlisting}[mathescape] 
+        { ... } export a,b,c
+    \end{lstlisting}
+
+    проблемы, недостатки
+
+\noindent\textbf{Реализация препроцессора}
+        общая структура: входной файл -> antlr syntax tree -> AST -> lisp_tree -> lisp_file
+
+        особоенности каждого этапа преобразования
+
+        Обработка ошибок
+
+        Видимость символов
+        
+    Интерфейс
+        CLI все дела
+
+        примеры использования
+
+\noindent\textbf{Cравнение входного языка с альтернативами}
+входной язык; полученный lisp; lisp; python; haskell
+
+\noindent\textbf{Заключение}
+    Что получилось. Привнесена няшность, но возможности далеко не такие же как были.
+
+\begin{thebibliography}{00}
+\addcontentsline{toc}{section}{Литература}
+    \bibitem{r5rs} стандарт r5rs
+    \bibitem{dragon} axо ульман книга дракона
+    \bibitem{antlrs} какая нибудь дока по antlr
+\end{thebibliography}
+
+%     \bibitem{mapreduce}
+%         Jeffrey Dean, Sanjay Ghemawat. MapReduce: Simplified Data Processing on Large Clusters~//~Google, Inc.~---~2004.
+
+%     \bibitem{problem}
+%         MapReduce~//~slideshare: URL: \newline
+%         http://www.slideshare.net/yandex/mapreduce-12321523
+
+%     \bibitem{serialize}
+%         What is the most efficient way to serialize in Python?~//~Quora: URL:  \newline
+%         http://www.quora.com/What-is-the-most-efficient-way-to-serialize-in-Python
+
+%     \bibitem{mr_tasks}
+%         Hadoop save the World?~//~CODE1NSTINCT: URL:  \newline
+%         http://www.codeinstinct.pro/2012/08/hadoop-design.html
+
+%     \bibitem{mr_patterns}
+%         MapReduce Patterns, Algorithms, and Use Cases~//~Highly Scalable Blog: URL:  \newline
+%         https://highlyscalable.wordpress.com/2012/02/01/mapreduce-patterns/
+        
+% \end{thebibliography}
+
+\end{document}

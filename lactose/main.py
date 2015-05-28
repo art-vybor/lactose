@@ -63,5 +63,5 @@ def main():
     compile_to_file(ast_tree, args.output_file)
     print 'result written at {FILENAME}'.format(FILENAME=args.output_file)
 
-    if args.run:    
+    if args.run:
         call(['racket', args.output_file])

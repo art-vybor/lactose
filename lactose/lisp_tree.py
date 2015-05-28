@@ -8,13 +8,13 @@ class LispTree():
 
         return [self.parse_function_define(child) for child in node.children]
 
-    # function_define: function_define_by_lambda | function_define_default;
+    # function_define: 'def' (function_define_by_lambda | function_define_default);
     # function_define_by_lambda: IDENTIFIER '=' lambda_function;
     # function_define_default: IDENTIFIER function_arguments '=' function_body;
     def parse_function_define(self, node):
         assert node.name == 'function_define'
 
-        child = node.children[0]
+        child = node.children[1]
         name = self.parse_IDENTIFIER(child.children[0])
 
         if child.name == 'function_define_by_lambda':
@@ -23,21 +23,22 @@ class LispTree():
         else: # function_define_default
             arguments = self.parse_function_arguments(child.children[1])
             body = self.parse_function_body(child.children[3])
-            if arguments:
-                return ['define', [name]+arguments, body]            
+            if isinstance(body, list):
+                return ['define', [name]+arguments]+body
             else:
-                return ['define', name, body]
+                assert False
+                return ['define', [name]+arguments, body]
 
     # lambda_function: '(' lambda_function ')' | '\\' function_arguments '->' function_body;
     def parse_lambda_function(self, node):
         assert node.name == 'lambda_function'
 
-        if node.children[0] == '(': 
+        if node.children[0].text == '(': 
             return self.parse_lambda_function(node.children[1])
 
         arguments = self.parse_function_arguments(node.children[1])
         body = self.parse_function_body(node.children[3])        
-        return ['lambda', arguments, body]
+        return ['lambda', arguments] + body
     
     # function_arguments: IDENTIFIER*;
     def parse_function_arguments(self, node):
@@ -58,9 +59,9 @@ class LispTree():
                 else: # expression
                     function_body.append(self.parse_expression(subchild))
 
-        if len(function_body) == 1:
-            return function_body[0]
-        return ['do', [], function_body]
+        # if len(function_body) == 1:
+        #     return function_body[0]
+        return function_body
     
     # expression 
     # : '(' expression ')' 
@@ -148,7 +149,6 @@ class LispTree():
 
         return node.text
 
-
     # def parse_token(self, ast_tree):
     #     return ast_tree.children[0].text
 
@@ -157,7 +157,7 @@ class LispTree():
             if isinstance(x, list):
                 return self.tree_to_str(x, False)
             return x
-        return '(' + ' '.join(map(f, tree)) + ')' if not root else '\n'.join(map(f, tree))
+        return '(' + ' '.join(map(f, tree)) + ')' if not root else '\n'.join(map(f, tree)+['(main)'])
 
     def __str__(self):
         return self.tree_to_str(self.tree)
