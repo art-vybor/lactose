@@ -32,4 +32,6 @@ Priorities:
 R5RS standart: http://www.schemers.org/Documents/Standards/R5RS/r5rs.pdf
 
 ##error
-make не прерывается при ошибке в setup.py
+make не прерывается при ошибке в setup.py и устанавливает при ошибки в тестах
+добавить проверку на количество аргументов передаваемое функции
+проверить f = \->... , f = x

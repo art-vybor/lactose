@@ -2,7 +2,21 @@
 
 -- sample functions
 
-def f x = x + 1
+
+def f = 1
+
+
+
+
+
+
+
+
+--def main = if 2 == 3 then 1 - 1  else f x
+--def main = 
+--    def f x = 1;
+--    f 2
+--def f x = x + 1
 
 --def f1 = 1
 --def f2 = 1+1
@@ -26,9 +40,20 @@ def f x = x + 1
 --def f = \-> (\x -> x + 1) 1
 
 
-----fact = \n -> if n == 0
-----                1
-----                n*fact(n-1)
+--def fact = \n -> if n == 0 then 1 else n*fact(n-1)
+--(define fact (lambda (n)
+--    (if (= n 0) 
+--        1
+--        (* n (fact (- n 1))))))
+
+
+
+--def f(n):
+--    if n == 0:
+--        return 1
+--    else:
+--        return n*fact(n-1)
+
 ----cycloid = \x -> abs (sin x)
 
 ----test_if = \x -> if x > 0

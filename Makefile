@@ -12,7 +12,7 @@ install-dir:
 
 install-package: install-dir clean
 	java -jar ./lib/antlr-4.5-complete.jar -Dlanguage=Python2 ./lactose/grammar/lactose.g4
-	PYTHONPATH=$(LIB_DIR) python setup.py install --prefix=$(PREFIX) #test
+	PYTHONPATH=$(LIB_DIR) python setup.py install --prefix=$(PREFIX) test
 	echo 'Lactose successfully installed'
 
 clean:

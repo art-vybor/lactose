@@ -5,50 +5,119 @@ from subprocess import call
 from lactose.grammar.lactoseParser import lactoseParser
 
 class ASTNode:
-    def __init__(self, index, text='', name=None, start=None, end=None, terminal=False, children=None):
+    def __init__(self, index):
         self.index = index
-        self.text = text
-        self.name = name
-        self.start = start
-        self.end = end
-        self.terminal = terminal
+        self.text = ''
+        self.name = ''
+        self.terminal = False
         self.children = []
+        self.antlr_node = None
+
+        self.parent = None
+        self.identifier_type = None
+
+        self.symbol_table = {}
+        self.symbol = None #(symbol, args)
 
     def __str__(self):
         if self.terminal:
-            return "{TYPE} '{TEXT}'".format(TYPE=self.name, TEXT=self.text)
+            return "{TYPE} '{TEXT}'".format(TYPE=self.name, TEXT=self.text,)
         else:
-            return self.name
+            return "{NAME}{SYMBOL}{TABLE}".format(NAME=self.name, 
+                                                    SYMBOL=self.get_symbol_in_str() if self.symbol else '',
+                                                    TABLE=' | table:' + str(self.symbol_table) if self.symbol_table else '')
 
-    def push(self, child):
+    def get_symbol_in_str(self):
+        return ' {NAME}({ARGS})'.format(NAME=self.symbol[0], ARGS=', '.join(self.symbol[1]))
+
+    def add_symbol_to_table(self, symbol):
+        name, args = symbol
+        self.symbol_table[name]=args
+
+    def add_child(self, child):
         self.children.append(child)
+
+    def init_identifier(self):
+        self.identifier_type = self.get_identifier_type()
+
+    def get_identifier_type(self):
+        node = self
+
+        while node != None:
+            print node
+            if self.text in node.symbol_table:
+                return ('function_call', node.symbol_table[self.text])
+            elif node.symbol and self.text in node.symbol[1]:
+                return ('argument',)
+            node = node.parent
+
+        return None
 
 class AST:
     def __init__(self, antlr_tree):
         self.root = self.parse(antlr_tree)
 
     def parse(self, antlr_tree):
-        index = 0
-        root = ASTNode(index=index)
-        stack = [(root, antlr_tree)]
+        self.index = 0
+        return self.parse_node(antlr_tree, None)
 
-        while stack:
-            ast_node, node = stack.pop()
-            ast_node.name = lactoseParser.ruleNames[node.getRuleIndex()]
-            #print ast_node.name, node.children
+    def parse_node(self, node, parent):
+        ast_node = self.get_new_ast_node(node)
+        ast_node.antlr_node = node
+        ast_node.name = self.get_ast_node_name(node)
+        ast_node.terminal = self.is_terminal(node)
+        ast_node.parent = parent
+        
+        if ast_node.terminal:
+            ast_node.text, _ = escape_encode(str(node.getSymbol().text))
+        else:
             if node.children:
                 for child in node.children:
-                    index += 1
-                    ast_child = ASTNode(index=index, start=antlr_tree.start, end=antlr_tree.stop)
-                    ast_node.push(ast_child)
+                    ast_node.add_child(self.parse_node(child, ast_node))
 
-                    if 'symbol' in child.__dict__: # is terminal
-                        ast_child.terminal = True
-                        ast_child.text, _ = escape_encode(str(child.getSymbol().text))
-                        ast_child.name = lactoseParser.symbolicNames[child.getSymbol().type]
-                    else:
-                        stack.append((ast_child, child))
-        return root
+
+        #TODO: rewrite, it's awfull
+        if ast_node.name in ['function_define']:
+            name = ast_node.children[1].text
+
+            function_arguments = None
+            if ast_node.children[2].name == 'function_define_default':
+                function_arguments = ast_node.children[2].children[0]
+            elif ast_node.children[2].name == 'function_define_by_lambda':
+                function_arguments = ast_node.children[2].children[1].children[0]
+
+            args = []
+            for function_argument in function_arguments.children:
+                args.append(function_argument.text)
+
+            ast_node.symbol = (name, args)
+                
+
+        if ast_node.name == 'parse':
+            for child in ast_node.children:
+                if child.symbol:
+                    ast_node.add_symbol_to_table(child.symbol)
+
+        if ast_node.name == 'function_define':
+            for child in ast_node.children[-1].children[-1].children[-1].children:
+                if child.symbol:
+                    ast_node.add_symbol_to_table(child.symbol)
+
+        return ast_node
+
+    def get_new_ast_node(self, node):
+        ast_node = ASTNode(index=self.index)
+        self.index += 1
+        return ast_node
+
+    def get_ast_node_name(self, node):
+        if self.is_terminal(node):
+            return lactoseParser.symbolicNames[node.getSymbol().type]
+        else:
+            return lactoseParser.ruleNames[node.getRuleIndex()]
+
+    def is_terminal(self, node):
+        return 'symbol' in node.__dict__
 
     def print_to_console(self):
         def print_node(node, spaces=0):
@@ -59,16 +128,16 @@ class AST:
         print_node(self.root)
 
     def print_to_dot_file(self, dot_filename):
-        def get_node_name(index):
+        def get_name(index):
             return 'n%s' % index
 
         def create_node(index, label):
             label, _ = escape_encode(label.encode('utf-8'))
-            return '\t{NAME} [label="{LABEL}"];\n'.format(NAME=get_node_name(index), LABEL=label)
+            return '\t{NAME} [label="{LABEL}"];\n'.format(NAME=get_name(index), LABEL=label)
 
         def create_connection(node_index, child_index):
-            return '\t{NODE_NAME} -> {CHILD_NAME};\n'.format(NODE_NAME=get_node_name(node_index), 
-                                                             CHILD_NAME=get_node_name(child_index))
+            return '\t{NODE_NAME} -> {CHILD_NAME};\n'.format(NODE_NAME=get_name(node_index), 
+                                                             CHILD_NAME=get_name(child_index))
 
         def print_node(node):
             out_file.write(create_node(node.index, str(node)))
