@@ -5,6 +5,7 @@ setup(name='lactose',
       entry_points = {
         'console_scripts': [
             'lactose = lactose.main:main',
+            'tests = tests.tests:main',
         ]
       },
       install_requires=['antlr4-python2-runtime'],

@@ -1,7 +1,6 @@
 from antlr4.error.ErrorListener import ConsoleErrorListener
 
 from lactose.exception.errors import LactoseSyntaxError
-from lactose import defaults
 
 
 class AntlrErrorListener(ConsoleErrorListener):
