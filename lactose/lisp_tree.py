@@ -2,12 +2,12 @@ class LispTree():
     def __init__(self, ast_tree):
         ast_tree.root.symbol_table.update(get_default_symbol_table())
         self.tree = self.parse(ast_tree.root)
-        
+
         #print self.tree
 
     # parse: function_define*;
     def parse(self, node):
-        assert node.name == 'parse'
+        assert node.name == 'parse', 'node is %s' % node
 
         return [self.parse_function_define(child) for child in node.children]
 
@@ -15,17 +15,22 @@ class LispTree():
     # function_define_by_lambda: '=' lambda_function;
     # function_define_default: function_arguments '=' function_body;
     def parse_function_define(self, node):
-        assert node.name == 'function_define'
+        assert node.name == 'function_define', 'node is %s' % node
 
         name = self.parse_IDENTIFIER(node.children[1])
 
         child = node.children[2]
         if child.name == 'function_define_by_lambda':
             lambda_function = self.parse_lambda_function(child.children[1])
+            arguments = lambda_function[1]
+            if len(arguments) == 0: name = name[0]
             return ['define', name, lambda_function]
         else: # function_define_default
             arguments = self.parse_function_arguments(child.children[0])
             body = self.parse_function_body(child.children[2])
+
+            if len(arguments) == 0: name = name[0]
+
             if isinstance(body, list):
                 return ['define', [name]+arguments]+body
             else:
@@ -34,7 +39,7 @@ class LispTree():
 
     # lambda_function: '(' lambda_function ')' | '\\' function_arguments '->' function_body;
     def parse_lambda_function(self, node):
-        assert node.name == 'lambda_function'
+        assert node.name == 'lambda_function', 'node is %s' % node
 
         if node.children[0].text == '(': 
             return self.parse_lambda_function(node.children[1])
@@ -45,14 +50,14 @@ class LispTree():
     
     # function_arguments: IDENTIFIER*;
     def parse_function_arguments(self, node):
-        assert node.name == 'function_arguments', str(node)
+        assert node.name == 'function_arguments', 'node is %s' % node
 
         return [self.parse_IDENTIFIER(child) for child in node.children]
 
     # function_body: function_body_token (';' function_body_token)*;
     # function_body_token: function_define | expression;
     def parse_function_body(self, node):
-        assert node.name == 'function_body'
+        assert node.name == 'function_body', 'node is %s' % node
         function_body = []
         for child in node.children:
             if child.name == 'function_body_token':
@@ -94,7 +99,7 @@ class LispTree():
         elif children[0].name == 'token':
             return self.parse_token(children[0])
         elif children[0].name == 'IDENTIFIER':
-            return [self.parse_IDENTIFIER(children[0])]
+            return self.parse_IDENTIFIER(children[0])
         elif children[0].name == 'function_call':
             return self.parse_function_call(children[0])
         elif children[0].name == 'lambda_function_call':
@@ -115,7 +120,7 @@ class LispTree():
 
     # if_condition: 'if' expression 'then' expression 'else' expression;
     def parse_if_condition(self, node):
-        assert node.name == 'if_condition'
+        assert node.name == 'if_condition', 'node is %s' % node
 
         expr_1 = self.parse_expression(node.children[1])
         expr_2 = self.parse_expression(node.children[3])
@@ -124,7 +129,7 @@ class LispTree():
 
     # function_call: IDENTIFIER expression*;
     def parse_function_call(self, node):
-        assert node.name == 'function_call'
+        assert node.name == 'function_call', 'node is %s' % node
 
         identifier = self.parse_IDENTIFIER(node.children[0])
         args = []
@@ -133,28 +138,32 @@ class LispTree():
 
         return [identifier] + args
 
-    # lambda_function_call: lambda_function expression*;
+    # lambda_function_call: '(' lambda_function ')' expression*;
     def parse_lambda_function_call(self, node):
-        assert node.name == 'lambda_function_call'
+        assert node.name == 'lambda_function_call', 'node is %s' % node
 
-        lambda_func = self.parse_lambda_function(node.children[0])
+        lambda_func = self.parse_lambda_function(node.children[1])
         args = []
-        for child in node.children[1:]:
+        for child in node.children[3:]:
             args.append(self.parse_expression(child))
         return [lambda_func] + args
 
     # token: IDENTIFIER | BOOLEAN | NUMBER | CHARACTER | STRING;
     def parse_token(self, node):
-        assert node.name == 'token'
+        assert node.name == 'token', 'node is %s' % node
         return node.children[0].text
 
     # IDENTIFIER
     def parse_IDENTIFIER(self, node):
-        assert node.name == 'IDENTIFIER'
+        assert node.name == 'IDENTIFIER', 'node is %s' % node
         node.init_identifier()
         #print '%s, %s' % (node, node.identifier_type)
+
         if not node.identifier_type:
             raise Exception('invalid ident %s' % node)
+
+        if node.identifier_type[0] == 'function_call' and len(node.identifier_type[1]) == 0:
+            return [node.text]
 
         return node.text
 
@@ -189,4 +198,4 @@ def get_scheme_operation(operation):
     return operation
 
 def get_default_symbol_table():
-    return {'sin':[], 'main':[]}
+    return {'sin':['x'], 'main':[]}

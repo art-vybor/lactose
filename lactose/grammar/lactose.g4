@@ -26,7 +26,7 @@ expression
     | ('not'|'~') expression
     ;
 function_call: IDENTIFIER expression*;
-lambda_function_call: lambda_function expression*;
+lambda_function_call: '(' lambda_function ')' expression*;
 
 if_condition: 'if' expression 'then' expression 'else' expression;
 

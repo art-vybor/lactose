@@ -44,7 +44,7 @@ class ASTNode:
         node = self
 
         while node != None:
-            print node
+#            print node
             if self.text in node.symbol_table:
                 return ('function_call', node.symbol_table[self.text])
             elif node.symbol and self.text in node.symbol[1]:
@@ -84,7 +84,7 @@ class AST:
             if ast_node.children[2].name == 'function_define_default':
                 function_arguments = ast_node.children[2].children[0]
             elif ast_node.children[2].name == 'function_define_by_lambda':
-                function_arguments = ast_node.children[2].children[1].children[0]
+                function_arguments = ast_node.children[2].children[1].children[1]
 
             args = []
             for function_argument in function_arguments.children:
