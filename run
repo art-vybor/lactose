@@ -1,2 +1,0 @@
-lactose -i samples/sample.lc  --run --stack_trace --lexems --pdf_tree 
-# make clean
