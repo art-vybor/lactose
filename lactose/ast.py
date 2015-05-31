@@ -49,37 +49,37 @@ class AST:
         self.index = 0
         return self.parse_node(antlr_tree, None)
 
-    def parse_node(self, node, parent):
-        ast_node = self.get_new_ast_node(node)
-        ast_node.antlr_node = node
-        ast_node.name = self.get_ast_node_name(node)
-        ast_node.terminal = self.is_terminal(node)
+    def parse_node(self, antlr_node, parent):
+        ast_node = self.get_new_ast_node()
+        ast_node.antlr_node = antlr_node
+        ast_node.name = self.get_ast_node_name(antlr_node)
+        ast_node.terminal = self.is_terminal(antlr_node)
         ast_node.parent = parent
         
         if ast_node.terminal:
-            ast_node.text, _ = escape_encode(str(node.getSymbol().text))
+            ast_node.text, _ = escape_encode(str(antlr_node.getSymbol().text))
         else:
-            if node.children:
-                for child in node.children:
+            if antlr_node.children:
+                for child in antlr_node.children:
                     ast_node.add_child(self.parse_node(child, ast_node))
 
         add_symbol_table_data(ast_node)
 
         return ast_node
 
-    def get_new_ast_node(self, node):
+    def get_new_ast_node(self):
         ast_node = ASTNode(index=self.index)
         self.index += 1
         return ast_node
 
-    def get_ast_node_name(self, node):
-        if self.is_terminal(node):
-            return lactoseParser.symbolicNames[node.getSymbol().type]
+    def get_ast_node_name(self, antlr_node):
+        if self.is_terminal(antlr_node):
+            return lactoseParser.symbolicNames[antlr_node.getSymbol().type]
         else:
-            return lactoseParser.ruleNames[node.getRuleIndex()]
+            return lactoseParser.ruleNames[antlr_node.getRuleIndex()]
 
-    def is_terminal(self, node):
-        return 'symbol' in node.__dict__
+    def is_terminal(self, antlr_node):
+        return 'symbol' in antlr_node.__dict__
 
     def print_to_console(self):
         def print_node(node, spaces=0):
