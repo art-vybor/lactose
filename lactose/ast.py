@@ -38,21 +38,9 @@ class ASTNode:
         self.children.append(child)
 
     def init_identifier(self):
-        self.identifier_type = self.get_identifier_type()
+        self.identifier_type = get_identifier_type(self)
 
-    def get_identifier_type(self):
-        node = self
-
-        while node != None:
-#            print node
-            if self.text in node.symbol_table:
-                return ('function_call', node.symbol_table[self.text])
-            elif node.symbol and self.text in node.symbol[1]:
-                return ('argument',)
-            node = node.parent
-
-        return None
-
+    
 class AST:
     def __init__(self, antlr_tree):
         self.root = self.parse(antlr_tree)
@@ -75,33 +63,7 @@ class AST:
                 for child in node.children:
                     ast_node.add_child(self.parse_node(child, ast_node))
 
-
-        #TODO: rewrite, it's awfull
-        if ast_node.name in ['function_define']:
-            name = ast_node.children[1].text
-
-            function_arguments = None
-            if ast_node.children[2].name == 'function_define_default':
-                function_arguments = ast_node.children[2].children[0]
-            elif ast_node.children[2].name == 'function_define_by_lambda':
-                function_arguments = ast_node.children[2].children[1].children[1]
-
-            args = []
-            for function_argument in function_arguments.children:
-                args.append(function_argument.text)
-
-            ast_node.symbol = (name, args)
-                
-
-        if ast_node.name == 'parse':
-            for child in ast_node.children:
-                if child.symbol:
-                    ast_node.add_symbol_to_table(child.symbol)
-
-        if ast_node.name == 'function_define':
-            for child in ast_node.children[-1].children[-1].children[-1].children:
-                if child.symbol:
-                    ast_node.add_symbol_to_table(child.symbol)
+        add_symbol_table_data(ast_node)
 
         return ast_node
 
@@ -160,3 +122,43 @@ class AST:
         self.print_to_dot_file(tmp_dot_filename)
 
         call(['dot', '-Tpdf', tmp_dot_filename, '-o', pdf_filename])
+
+
+def add_symbol_table_data(ast_node):
+    #TODO: rewrite, it's awfull
+    if ast_node.name in ['function_define']:
+        name = ast_node.children[1].text
+
+        function_arguments = None
+        if ast_node.children[2].name == 'function_define_default':
+            function_arguments = ast_node.children[2].children[0]
+        elif ast_node.children[2].name == 'function_define_by_lambda':
+            function_arguments = ast_node.children[2].children[1].children[1]
+
+        args = []
+        for function_argument in function_arguments.children:
+            args.append(function_argument.text)
+
+        ast_node.symbol = (name, args)
+            
+
+    if ast_node.name == 'parse':
+        for child in ast_node.children:
+            if child.symbol:
+                ast_node.add_symbol_to_table(child.symbol)
+
+    if ast_node.name == 'function_define':
+        for child in ast_node.children[-1].children[-1].children[-1].children:
+            if child.symbol:
+                ast_node.add_symbol_to_table(child.symbol)
+
+
+def get_identifier_type(node):
+    identifier_text = node.text
+    while node != None:
+        if identifier_text in node.symbol_table:
+            return ('function_call', node.symbol_table[identifier_text])
+        elif node.symbol and identifier_text in node.symbol[1]:
+            return ('argument',)
+        node = node.parent
+    return None

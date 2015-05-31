@@ -5,12 +5,9 @@ class LispTree():
 
         self.tree = self.parse(ast_tree.root)
 
-        #print self.tree
-
     # parse: function_define*;
     def parse(self, node):
         assert node.name == 'parse', 'node is %s' % node
-
         return [self.parse_function_define(child) for child in node.children]
 
     # function_define: 'def' IDENTIFIER (function_define_by_lambda | function_define_default);
@@ -33,11 +30,7 @@ class LispTree():
 
             if len(arguments) == 0: name = name[0]
 
-            if isinstance(body, list):
-                return ['define', [name]+arguments]+body
-            else:
-                assert False
-                return ['define', [name]+arguments, body]
+            return ['define', [name]+arguments]+body
 
     # lambda_function: '(' lambda_function ')' | '\\' function_arguments '->' function_body;
     def parse_lambda_function(self, node):
@@ -53,7 +46,6 @@ class LispTree():
     # function_arguments: IDENTIFIER*;
     def parse_function_arguments(self, node):
         assert node.name == 'function_arguments', 'node is %s' % node
-
         return [self.parse_IDENTIFIER(child) for child in node.children]
 
     # function_body: function_body_token (';' function_body_token)*;
@@ -69,8 +61,6 @@ class LispTree():
                 else: # expression
                     function_body.append(self.parse_expression(subchild))
 
-        # if len(function_body) == 1:
-        #     return function_body[0]
         return function_body
     
     # expression 
@@ -159,7 +149,6 @@ class LispTree():
     def parse_IDENTIFIER(self, node):
         assert node.name == 'IDENTIFIER', 'node is %s' % node
         node.init_identifier()
-        #print '%s, %s' % (node, node.identifier_type)
 
         if not node.identifier_type:
             raise Exception('invalid ident %s' % node)
@@ -201,6 +190,7 @@ def get_scheme_operation(operation):
     if operation in python_to_scheme_operation:
         return python_to_scheme_operation[operation]
     return operation
+
 
 def get_default_symbol_table():
     return {'sin':['x'],
