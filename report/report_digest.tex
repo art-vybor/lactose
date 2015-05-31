@@ -179,9 +179,10 @@ art-vybor@ya.ru; qrcs@mail.ru
 
     \begin{figure}[h!]  
         \begin{lstlisting}[mathescape,label={lst:lactose},caption={Реализация функций fact и fib на входном языке},captionpos=b]
-def fact = \n -> if n == 0 then 1 else n*fact(n-1)
+def fact = \n -> if n == 0 then 1 else n*(fact n-1)
 
-def fib n = ( (1+sqrt(5)/2)**n - (1-sqrt(5)/2)**n ) / sqrt(5)
+def fib n = ( ((1+sqrt 5)/2)**n - ((1-sqrt 5)/2)**n ) / (sqrt 5)
+
         \end{lstlisting}
     \end{figure}
 

@@ -1,6 +1,8 @@
 class LispTree():
     def __init__(self, ast_tree):
+        self.main = 'main' in ast_tree.root.symbol_table
         ast_tree.root.symbol_table.update(get_default_symbol_table())
+
         self.tree = self.parse(ast_tree.root)
 
         #print self.tree
@@ -172,7 +174,10 @@ class LispTree():
             if isinstance(x, list):
                 return self.tree_to_str(x, False)
             return x
-        return '(' + ' '.join(map(f, tree)) + ')' if not root else '\n'.join(map(f, tree))
+        if not root:
+            return '(' + ' '.join(map(f, tree)) + ')'
+        else:
+            return '\n'.join(map(f, tree)) + ('\n(main)' if self.main else '')
 
     def __str__(self):
         return self.tree_to_str(self.tree)
@@ -198,4 +203,9 @@ def get_scheme_operation(operation):
     return operation
 
 def get_default_symbol_table():
-    return {'sin':['x'], 'main':[]}
+    return {'sin':['x'],
+            'main':[],
+            'display':['x'],
+            'newline':[],
+            'sqrt':['x'],
+            'floor':['x']}

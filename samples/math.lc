@@ -1,0 +1,33 @@
+-- simplest mathematic functions
+
+def one = 1
+
+def gcd a b = if b == 0 then a else gcd b a%b
+
+def abs a = if a >= 0 then a else -a
+
+def sqr x = binpow x 2
+
+def binpow a n = 
+    if n == 0 then 1
+    else if n%2 == 1 then (binpow a n-1)*a
+    else (binpow a n/2)**2
+
+def fib n = ( ((1+sqrt 5)/2)**n - ((1-sqrt 5)/2)**n ) / (sqrt 5)
+
+def fact n = if n == 0 then 1 else n*(fact n-1)
+
+
+def print x = 
+    display x;
+    newline
+
+def main =
+    print one; -- 1
+    print (gcd 2 8); -- 2
+    print (fib 4); -- 3
+    print (sqr 2); -- 4
+    print (abs (-5)); -- 5
+    print (fact 3); -- 6
+    print one + (sqr 2) + (abs (-2)); --7
+    print (binpow 2 3) -- 8
