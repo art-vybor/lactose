@@ -26,7 +26,12 @@ class ExpressionTest(unittest.TestCase):
         tests = {'def main = #t': '#lang r5rs\n(define (main) #t)\n(main)',
                  'def main = 1': '#lang r5rs\n(define (main) 1)\n(main)',
                  'def main = #b00': '#lang r5rs\n(define (main) #b00)\n(main)',
-                 #'def main = x':    '#lang r5rs\n(define (main) (x))',
+        }
+        test(self, tests)
+
+    def test_strings(self):
+        tests = {'def main = "123123"': '#lang r5rs\n(define (main) "123123")\n(main)',
+                 #'def main = "123\n123"': '#lang r5rs\n(define (main) "123\n123")\n(main)',
         }
         test(self, tests)
 
