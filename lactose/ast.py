@@ -135,12 +135,16 @@ def add_symbol_table_data(ast_node):
         elif ast_node.children[2].name == 'function_define_by_lambda':
             function_arguments = ast_node.children[2].children[1].children[1]
 
-        args = []
-        for function_argument in function_arguments.children:
-            args.append(function_argument.text)
+        args = [f_arg.text for f_arg in function_arguments.children]
 
         ast_node.symbol = (name, args)
-            
+    
+    if ast_node.name == 'lambda_function':
+        name = None
+        function_arguments = ast_node.children[1]
+        args = [f_arg.text for f_arg in function_arguments.children]
+        ast_node.symbol = (name, args)    
+              
 
     if ast_node.name == 'parse':
         for child in ast_node.children:
@@ -151,6 +155,10 @@ def add_symbol_table_data(ast_node):
         for child in ast_node.children[-1].children[-1].children[-1].children:
             if child.symbol:
                 ast_node.add_symbol_to_table(child.symbol)
+
+    # if ast_node.name == 'lambda_function':
+    #     for child in ast_node.children[1].children:
+    #         ast_node.add_symbol_to_table(child.symbol)            
 
 
 def get_identifier_type(node):

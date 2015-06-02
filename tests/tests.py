@@ -76,7 +76,10 @@ class ExpressionTest(unittest.TestCase):
 
     def test_lambda_function_call(self):
         tests = {'def main = (\->1)': '#lang r5rs\n(define (main) ((lambda () 1)))\n(main)',
-                 #'def main = (\x->x) 2': '#lang r5rs\n(define (main) ((lambda (x) x) 2))',
+                 'def main = (\ x->x) 2': '#lang r5rs\n(define (main) ((lambda (x) x) 2))\n(main)',
+                 'def main = (\ x->x) (sin 1)': '#lang r5rs\n(define (main) ((lambda (x) x) (sin 1)))\n(main)',
+                 'def f = 1\ndef main = (\ x->x) f': '#lang r5rs\n(define (f) 1)\n(define (main) ((lambda (x) x) (f)))\n(main)',
+                 'def main = (sin 1) + ((\ x->x) 4) + 2*3': '#lang r5rs\n(define (main) (+ (+ (sin 1) ((lambda (x) x) 4)) (* 2 3)))\n(main)',
         }
         test(self, tests)
                  

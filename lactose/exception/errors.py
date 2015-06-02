@@ -11,11 +11,13 @@ class LactoseError():
 class LactoseSyntaxError(LactoseError):
     pass
 
+
 class IdentifierNotFoundError(LactoseError):
     def __init__(self, node):
         self.line = node.antlr_node.symbol.line
         self.column = node.antlr_node.symbol.column
-        self.msg = 'Identifier {IDENT} not found.'.format(IDENT=node.text)
+        self.msg = "Identifier '{IDENT}' not found.".format(IDENT=node.text)
+
 
 class TooManySyntaxErrorException(Exception):
     def __init__(self, errors):
