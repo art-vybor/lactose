@@ -200,4 +200,5 @@ def get_default_symbol_table():
             'display':['x'],
             'newline':[],
             'sqrt':['x'],
-            'floor':['x']}
+            'floor':['x'],
+            'write':['']}

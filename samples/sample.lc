@@ -2,7 +2,10 @@
 
 -- sample functions
 
-def main = "123\\\\n123"
+def main = (\ f -> f 1) (\ x -> 1)
+
+
+--def main = "123\\\\n123"
 
 --def main = 
 --    def f = \ x-> 1;

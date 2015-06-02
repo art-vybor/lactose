@@ -35,11 +35,17 @@ def parse_args():
     return args
 
 
+
+
+
+
 def main():
     sys.tracebacklimit = 0
 
     args = parse_args()
-    if any([args.lexems, args.console_tree, args.pdf_tree, args.stack_trace]):
+    debug_mode_status = any([args.lexems, args.console_tree, args.pdf_tree, args.stack_trace])
+
+    if debug_mode_status:
         print 'debug mode on'
 
     if args.stack_trace:
@@ -61,7 +67,9 @@ def main():
         print 'tree in pdf written at {FILENAME}'.format(FILENAME=pdf_filename)
 
     compile_to_file(ast_tree, args.output_file)
-    print 'result written at {FILENAME}'.format(FILENAME=args.output_file)
+    
+    if debug_mode_status:
+        print 'result written at {FILENAME}'.format(FILENAME=args.output_file)
 
     if args.run:
         call(['racket', args.output_file])

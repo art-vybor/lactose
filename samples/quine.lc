@@ -1,0 +1,2 @@
+def main = display program; write program; newline
+def program = "def main = display program; write program; newline\ndef program = "
