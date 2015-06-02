@@ -4,7 +4,7 @@ from lactose.compiler import get_ast_tree, compile_to_string
 
 
 def reduce_spaces(string):
-    return string.replace(' ', '').replace('\n','')
+    return string.replace(' ', '')#.replace('\n','')
 
 def compile_from_string_to_string(string):
     ast_tree = get_ast_tree(string=string)
@@ -31,8 +31,14 @@ class ExpressionTest(unittest.TestCase):
 
     def test_strings(self):
         tests = {'def main = "123123"': '#lang r5rs\n(define (main) "123123")\n(main)',
-                 #'def main = "123\n123"': '#lang r5rs\n(define (main) "123\n123")\n(main)',
+                 'def main = "123\n123"': '#lang r5rs\n(define (main) "123\n123")\n(main)',
+                 'def main = "123\\n123"': '#lang r5rs\n(define (main) "123\\n123")\n(main)',
+                 'def main = "123\\"n123"': '#lang r5rs\n(define (main) "123\\"n123")\n(main)',
         }
+        test(self, tests)
+
+    def test_comments(self):
+        tests = {'--def main = "123123"': '#lang r5rs\n'}
         test(self, tests)
 
     def test_precedence(self):
@@ -87,11 +93,7 @@ class ExpressionTest(unittest.TestCase):
                  'def main = (sin 1) + ((\ x->x) 4) + 2*3': '#lang r5rs\n(define (main) (+ (+ (sin 1) ((lambda (x) x) 4)) (* 2 3)))\n(main)',
         }
         test(self, tests)
-                 
-
-    
-
-    #'def f x = x\ndef main = def g y = y+1; f g 1': '#lang r5rs\n(define (f x) x)\n(define (main) ((define (g y) (+ y 1))) (f (g 1))))',
 
 def main():
     unittest.main()
+

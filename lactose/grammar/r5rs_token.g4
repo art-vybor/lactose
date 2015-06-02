@@ -15,7 +15,7 @@ CHARACTER: '#\\' . | '#\\' CHARACTER_NAME ;
 fragment CHARACTER_NAME: S P A C E | N E W L I N E;
 
 STRING: '"' STRING_ELEMENT* '"';
-fragment STRING_ELEMENT: ~('"' | '\\') | '\\"' | '\\\\';
+fragment STRING_ELEMENT: ~('"' | '\\') | '\\"' | '\\';
 
 NUMBER: NUM_2 | NUM_8 | NUM_10 | NUM_16;
 fragment NUM_2: PREFIX_2 COMPLEX_2;

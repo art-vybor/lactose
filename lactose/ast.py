@@ -57,7 +57,7 @@ class AST:
         ast_node.parent = parent
         
         if ast_node.terminal:
-            ast_node.text, _ = escape_encode(str(antlr_node.getSymbol().text))
+            ast_node.text = str(antlr_node.getSymbol().text)
         else:
             if antlr_node.children:
                 for child in antlr_node.children:

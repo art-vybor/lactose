@@ -25,6 +25,7 @@ expression
     | ('+'|'-') expression
     | ('not'|'~') expression
     ;
+
 function_call: IDENTIFIER expression*;
 lambda_function_call: '(' lambda_function ')' expression*;
 
@@ -40,5 +41,5 @@ function_body: function_body_token (';' function_body_token)*;
 function_body_token: function_define | expression;
 function_arguments: IDENTIFIER*;
 
-COMMENT:  '--' ~( '\n' )* -> skip;
+COMMENT:  '--' ~( [\n] )* -> skip;
 SPACES: [ \t\n]+ -> skip;
