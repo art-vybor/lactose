@@ -1,0 +1,10 @@
+
+def make_adder n = \x -> x+n
+def inc = make_adder 1
+def dec = make_adder (-1)
+
+def main =
+    display (inc 0);
+    newline;
+    display (dec 3);
+    newline

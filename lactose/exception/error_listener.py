@@ -11,10 +11,9 @@ class AntlrErrorListener(ConsoleErrorListener):
         self.errors += 1
         print LactoseSyntaxError(line, column, msg)
 
-AntlrErrorListener.INSTANCE = AntlrErrorListener()
-
 
 def set_error_listener(obj, listener=AntlrErrorListener):
+    listener.INSTANCE = listener()
     obj._listeners = [listener.INSTANCE]
 
 

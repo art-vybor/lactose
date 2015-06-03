@@ -36,7 +36,6 @@ def get_ast_tree(filepath=None, string=None):
     parser = lactoseParser(stream)
     set_error_listener(parser)
     tree = parser.parse()
-
     if get_error_listener().errors:
         raise TooManySyntaxErrorException(get_error_listener().errors)
         

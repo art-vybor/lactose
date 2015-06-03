@@ -35,10 +35,6 @@ def parse_args():
     return args
 
 
-
-
-
-
 def main():
     sys.tracebacklimit = 0
 

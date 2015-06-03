@@ -2,14 +2,29 @@
 
 -- sample functions
 
-def main = (\ f -> f 1) (\ x -> 1)
+
+--def main = (\ f -> f 1) (\ x -> 1)
+
+
+
+def main = 
+    display (
+        (\f -> f 3) \x -> x**2
+    );
+    newline
+
+ 
+
+
+
+--def main = (\ f -> f 1) (\ x -> 1)
 
 
 --def main = "123\\\\n123"
 
---def main = 
---    def f = \ x-> 1;
---    f 1
+--def f = \x y -> x**2 + y**2
+
+--def main = display (f 1 2)
     
 
 

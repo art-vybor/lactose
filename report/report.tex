@@ -47,14 +47,14 @@
 
 \usepackage{fancyvrb}
 
+\usepackage[nounderscore]{syntax} %для поддержки рбнф
+%\setlength{\grammarindent}{12em} %устанавливает нужный отступ перед ::=
+\setlength{\grammarparsep}{6pt plus 1pt minus 1pt}  %сокращает расстояние между правилами
 
 \usepackage[pdftex]{graphicx}  % поддержка картинок для пдф
 \graphicspath{ {./pictures/} }
 \usepackage{rotating}
 %\DeclareGraphicsExtensions{.jpg,.png}
-
-
-
 
 \renewcommand{\labelenumi}{\theenumi.} %меняет вид нумерованного списка
 
@@ -77,6 +77,9 @@
 \makeatletter 
 \renewcommand{\fnum@figure}[1]{Рисунок~\thefigure~---~\sffamily}
 \makeatother
+
+
+
 
 \begin{document}
 \pgfplotsset{compat=1.8}
@@ -107,7 +110,7 @@
 
 \bigskip
 
-{\large <<Syntax sugar for Scheme>>}
+{\large <<Препроцессор синаксического сахара для языка Scheme>>}
 \bigskip
 
 \vfill
@@ -136,7 +139,7 @@
 
 \begin{itemize}
     \item уточнить название работы
-    \item
+    \item что делать с тестированием
     \item
 \end{itemize}
 
@@ -160,39 +163,137 @@
 \clearpage
 
 \section{Теоретическая часть}
-    \subsection{Lisp}
-        Поподробнее про лисп.
-    \subsection{Функционал входного языка}
-        вступленние
-        программа представляет собой список из определений функций и их вызовов
+    \subsection{Scheme}
+        \textcolor{red}{Поподробнее про схему.}
+        В данной работе рассматривается версия языка Scheme, удолетворяющая стандарту r5rs~\cite{r5rs}.
+    \subsection{Входной язык}
+        \textcolor{red}{вступленние}
 
-        мб ввести main и оставить только определение функций?
+        Программа на исходном языке представляет собой множество определений функций.
+        Переменные также рассматриваются как функции.
+        Входной точкой программы является функция main.
 
-        \subsubsection{символы}
-            про косяк в документации про строки
-            как в лиспе, за исключением... 
-            примеры
-        \subsubsection{функции}
-            1)sign x  | x > 0  = 1 (multiwayif)
+        \textcolor{red}{подробнее про функцию main}
 
-                | x == 0 = 0
+        \subsubsection{Токены}
+            Токены языка аналогичны токенам языка программирования Scheme.
+            Представлены следующие виды токенов: строка, идентификатор, число, логический тип и символ (литеральная константа). Примеры правильных токенов: 
 
-                | x < 0  = -1
-            2) sign 0 = 0 
-            sign a = if a > 0 then 1 else -1
+            \begin{itemize}
+                \item символ закрывающей скобки~---~\lstinline$#\)$
+                \item строка~---~\lstinline$"\"r5rs\" standart\n"$
+                \item идентификатор~---~\lstinline$_ident$
+                \item логическая истина~---~\lstinline$#t$
+                \item десятичное число~---~\lstinline$123$
+                \item шестнадцатеричное число~---~\lstinline$#xDEADBEAF$
+            \end{itemize}
 
-            пример на Algebraic data type ?! я не работаю с типами :(
+            В рамках грамматики под нетерминалом $\langle token\rangle$ подразумевают строку, число, логический тип или символ:
+            \begin{grammar}
+                <token> ::= <BOOLEAN> | <NUMBER> | <CHARACTER> | <STRING>
+            \end{grammar}
+            Нетерминал, соответствующий идентификатору~---~<IDENTIFIER>, рассматривается отдельно.
 
-            3) \\x y -> x+y 
+            Единственным существенным отличием лексической структуры входного языка от Scheme является отсутствие знака перед числом, так как во входном языке знак перед числом определяется с помощью унарного минуса, который, в свою очередь, встроен в интерпретатор и фактически является элементом синтаксиса языка.
+            Зависимость от регистра символов определяется настройками интерпретатора Scheme, работающем в связке с нашим компилятором.            
 
-            какой должен быть вызов функции? мб сделать lisp-style?
-        \subsubsection{условия}
-            if a then b else c
+            Документация Sсheme~\cite{r5rs} содержит следующее определение строки в РБНФ:
+            \begin{grammar}
+                <string> ::= `"' <string element>* `"'
 
-        \subsubsection{инфиксная арифметика}
-            при чём тут guile?
-        \subsubsection{определение функций на scheme}
-            мб вида: sign x: scheme (scheme body) ?
+                <string element> ::= any character other than `"' or `\textbackslash' | `\textbackslash " '| `\textbackslash \textbackslash'
+            \end{grammar}
+            Данное определение содержит ошибку.
+            Оно не позволяет определить одиночный слэш.
+            Поэтому использовалось определение строки, совпадающее с таковым в реализации стандарта r5rs в рамках языка Racket. 
+            \begin{grammar}
+                <string> ::= `"' <string element>* `"'
+
+                <string element> ::= any character other than `"' or `\textbackslash' | `\textbackslash " '| `\textbackslash'
+            \end{grammar}
+
+        \subsubsection{Выражения}
+            Основной структурной единицей языка является выражение.
+            В качестве выражения рассматриваются инфиксные операции, условный оператор и вызов функции.
+            Входной язык поддерживает инфиксные операции, аналогичные операциям языка Python.
+            Порядок вычислений определяется приоритетом операторов, а также может быть задан явно с помощью круглых скобок.
+
+            Грамматика выражений в формате РБНФ:
+            \begin{grammar}
+                <expression> ::=
+                      <expression> `**' <expression> \\
+                    | <expression> (`*'|`/'|`\%'|`//') <expression> \\
+                    | <expression> (`+'|`-') <expression> \\
+                    | <expression> (`\textless\null\textless' | `\textgreater\null\textgreater') <expression> \\
+                    | <expression> `&' <expression> \\
+                    | <expression> `^' <expression> \\
+                    | <expression> `|' <expression> \\
+                    | <expression> `and' <expression> \\
+                    | <expression> `or' <expression> \\
+                    | <expression> (`\textless' | `\textless=' | `\textgreater' | `\textgreater=') <expression> \\
+                    | <expression> (`==' | `!=') <expression> \\
+                    | (`+'|`-') <expression> \\
+                    | (`not'|`~') <expression> \\
+                    | <if condition> \\
+                    | <token> \\
+                    | <IDENTIFIER> \\
+                    | <function call> \\
+                    | <lambda function call> \\
+                    | `(' <expression> `)'
+            \end{grammar}
+
+            \textcolor{red}{написать про приоритеты}
+
+            Пример выражения: \lstinline$not (x > 2 and x < 5)$.
+
+        \subsubsection{Условия}
+            В качестве условного оператора используется традиционный оператор if, который записывается в формате РБНФ следующим образом:
+            \begin{grammar}
+                <if condition> ::= `if' <expression> `then' <expression> `else' <expression>
+            \end{grammar}
+            Оператор if работает аналогично тернарному оператору: если выражение после `if' истинно, то он возвращает выражение после `then', в противном случае он возвращает выражение после `else'.
+
+            Пример условия: \lstinline$if not (x > 2 and x < 5) then 1 else 0$.
+
+        \subsubsection{Определение функций}
+            \textcolor{red}{добавить текст}
+            \begin{grammar}
+                <function define> ::= `def' <IDENTIFIER> <function arguments> `=' <function body>
+
+                <function body> ::= <function body token> (`;' <function body token>)*
+
+                <function body token> ::= <function define> | <expression>
+
+                <function arguments> ::= <IDENTIFIER>*
+            \end{grammar}
+
+            Пример определения функции от одного аргумента, которая возвращает модуль числа: \lstinline$def abs a = if a < 0 then -a else a$.
+
+        \subsubsection{Анонимные функции}
+            \textcolor{red}{добавить текст}
+            \begin{grammar}
+                <lambda function> ::= `\\' <function arguments> `->' <function body>
+            \end{grammar}
+
+            Пример анонимной функции от двух аргументов, которая находит сумму квадратов двух чисел: \lstinline$\x y-> x*x + y*y$.
+
+        \subsubsection{Вызов функций}
+            \textcolor{red}{добавить текст}
+
+            \begin{grammar}
+                <function call> ::= <IDENTIFIER> <expression>*
+
+                <lambda function call> ::= `(' <lambda function> `)' <expression>*
+            \end{grammar}
+
+            Пример определения рекурсивной функции от одного аргумента, которая находит факториал числа: \lstinline$def fact n = if n == 0 then 1 else n*(fact n-1)$.
+
+            Пример вызова анонимной функции от одного аргумента, который также является анонимной функцией: \lstinline$(\f -> f 3) \x->x**2$.
+
+        \subsubsection{Импортирование символов из Scheme}
+            \textcolor{red}{сначала надо реализовать}
+
+            Пример: \lstinline${...} export a,b$
         
 \clearpage
 
@@ -217,17 +318,17 @@
             что круто, а что не очень
             обязательно про минусы python версии
             особенно про различное поведение при компиляции из файла и строки %$"\""$
-        \subsubsection{graphviz}
+        \subsubsection{Graphviz}
             ...
-        \subsubsection{тестирование}
+        \subsubsection{Python unittest}
             ...
-        \subsubsection{сборка пакета}
+        \subsubsection{Python distutils}
             ...
 
-    \subsubsection{Детали реализации}
+    \subsection{Особенности реализации}
         общая структура:
 
-        $входной файл -> antlr syntax tree -> AST -> lisp_tree -> lisp_file$
+        %входной файл -> antlr syntax tree -> AST -> lisp_tree -> lisp_file
 
         особоенности каждого этапа преобразования
         \subsubsection{Обработка ошибок}
@@ -245,9 +346,28 @@
 \clearpage
 
 \section{Тестирование}
-    что писать?
+    \textcolor{red}{что писать?}
+    сравнение синтаксиса с другими языками
 
-    куда вставить сравнение синтаксиса с другими языками? 
+    \subsection{Производительность}
+        График производительности от объёма нагенеренной программы.
+
+        Это медленно.
+
+        Для того, чтобы разобраться в чём проблема воспользуемся планировщикова cProfile и визулизатором gprof2pdf. 
+        Описание что это и как использовали.
+
+        Вуаля:
+
+        \begin{figure}[h!]
+            \center
+            \includegraphics[scale=0.3]{lactose_stats.png}
+            \caption{Результат работы профилировщика}
+            \label{pic:stats}
+        \end{figure}
+
+        Вывод ANTLR для Python слоупок.
+    
 \clearpage
 
 \section{Заключение}
@@ -261,24 +381,6 @@
     \bibitem{dragon} axо ульман книга дракона
     \bibitem{antlrs} какая нибудь дока по antlr
 
-    \bibitem{mapreduce}
-        Jeffrey Dean, Sanjay Ghemawat. MapReduce: Simplified Data Processing on Large Clusters~//~Google, Inc.~---~2004.
-
-    \bibitem{problem}
-        MapReduce~//~slideshare: URL: \newline
-        http://www.slideshare.net/yandex/mapreduce-12321523
-
-    \bibitem{serialize}
-        What is the most efficient way to serialize in Python?~//~Quora: URL:  \newline
-        http://www.quora.com/What-is-the-most-efficient-way-to-serialize-in-Python
-
-    \bibitem{mr_tasks}
-        Hadoop save the World?~//~CODE1NSTINCT: URL:  \newline
-        http://www.codeinstinct.pro/2012/08/hadoop-design.html
-
-    \bibitem{mr_patterns}
-        MapReduce Patterns, Algorithms, and Use Cases~//~Highly Scalable Blog: URL:  \newline
-        https://highlyscalable.wordpress.com/2012/02/01/mapreduce-patterns/
         
 \end{thebibliography}
 

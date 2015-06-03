@@ -1,0 +1,5 @@
+set -e
+python -m cProfile -o lactose_stats lactose_profiler_entry_point.py -i ~/git/lactose/samples/math.lc 
+#https://github.com/jrfonseca/gprof2dot
+gprof2dot -f pstats -n 1 -e 1 lactose_stats | dot -Tpng -o lactose_stats.png
+rm lactose_stats

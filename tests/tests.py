@@ -65,6 +65,8 @@ class ExpressionTest(unittest.TestCase):
                  'def f x y = x+y': '#lang r5rs\n(define (f x y) (+ x y))',
                  'def f x y = (x+y)': '#lang r5rs\n(define (f x y) (+ x y))',
                  'def f x y = x+y**2': '#lang r5rs\n(define (f x y) (+ x (expt y 2)))',
+                 'def f = \ x -> 1': '#lang r5rs\n(define (f) (lambda (x) 1))',
+                 'def f n = \ x -> x + n': '#lang r5rs\n(define (f n) (lambda (x) (+ x n)))'
         }
         test(self, tests)
 
@@ -73,15 +75,6 @@ class ExpressionTest(unittest.TestCase):
                  'def f x = x\ndef main = f 1': '#lang r5rs\n(define (f x) x)\n(define (main) (f 1))\n(main)',
                  'def f x = x\ndef main = f 2+2': '#lang r5rs\n(define (f x) x)\n(define (main) (f (+ 2 2)))\n(main)',
                  'def f x = x\ndef main = f 2+2': '#lang r5rs\n(define (f x) x)\n(define (main) (f (+ 2 2)))\n(main)',         
-        }
-        test(self, tests)
-
-    def test_lambda_function_define(self):
-        tests = {'def f = \->1': '#lang r5rs\n(define f (lambda () 1))',
-                 'def f = \ x -> 1': '#lang r5rs\n(define f (lambda (x) 1))',
-                 'def f = \ x -> x': '#lang r5rs\n(define f (lambda (x) x))',
-                 'def f = \ x y -> x+y': '#lang r5rs\n(define f (lambda (x y) (+ x y)))',
-
         }
         test(self, tests)
 

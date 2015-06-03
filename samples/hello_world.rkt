@@ -1,3 +1,3 @@
 #lang r5rs
-(define (main) (display "Hello Wolrd1") (newline))
+(define (main) (display "Hello Wolrd") (newline))
 (main)

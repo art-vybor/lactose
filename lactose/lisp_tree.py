@@ -12,27 +12,18 @@ class LispTree():
         assert node.name == 'parse', 'node is %s' % node
         return [self.parse_function_define(child) for child in node.children]
 
-    # function_define: 'def' IDENTIFIER (function_define_by_lambda | function_define_default);
-    # function_define_by_lambda: '=' lambda_function;
-    # function_define_default: function_arguments '=' function_body;
+    # function_define: 'def' IDENTIFIER function_arguments '=' function_body;
+    # function_define_default: ;
     def parse_function_define(self, node):
         assert node.name == 'function_define', 'node is %s' % node
 
         name = self.parse_IDENTIFIER(node.children[1])
 
-        child = node.children[2]
-        if child.name == 'function_define_by_lambda':
-            lambda_function = self.parse_lambda_function(child.children[1])
-            arguments = lambda_function[1]
-            if len(arguments) == 0: name = name[0]
-            return ['define', name, lambda_function]
-        else: # function_define_default
-            arguments = self.parse_function_arguments(child.children[0])
-            body = self.parse_function_body(child.children[2])
+        arguments = self.parse_function_arguments(node.children[2])
+        body = self.parse_function_body(node.children[4])
 
-            if len(arguments) == 0: name = name[0]
-
-            return ['define', [name]+arguments]+body
+        if len(arguments) == 0: name = name[0]
+        return ['define', [name]+arguments]+body
 
     # lambda_function: '(' lambda_function ')' | '\\' function_arguments '->' function_body;
     def parse_lambda_function(self, node):
@@ -82,6 +73,8 @@ class LispTree():
     # | expression ('<' | '<=' | '>' | '>=') expression
     # | expression ('==' | '!=') expression
     # | token
+    # | IDENTIFIER
+    # | lambda_function
     # | function_call
     # | lambda_function_call;
     def parse_expression(self, node):
@@ -94,6 +87,8 @@ class LispTree():
             return self.parse_token(children[0])
         elif children[0].name == 'IDENTIFIER':
             return self.parse_IDENTIFIER(children[0])
+        elif children[0].name == 'lambda_function':
+            return self.parse_lambda_function(children[0])
         elif children[0].name == 'function_call':
             return self.parse_function_call(children[0])
         elif children[0].name == 'lambda_function_call':
