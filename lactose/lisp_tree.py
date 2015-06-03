@@ -3,6 +3,8 @@ from lactose.exception.errors import IdentifierNotFoundError
 class LispTree():
     def __init__(self, ast_tree):
         self.main = 'main' in ast_tree.root.symbol_table
+        self.errors = 0
+
         ast_tree.root.symbol_table.update(get_default_symbol_table())
 
         self.tree = self.parse(ast_tree.root)
@@ -143,7 +145,9 @@ class LispTree():
         node.init_identifier()
 
         if not node.identifier_type:
-            raise IdentifierNotFoundError(node)
+            self.errors += 1
+            print IdentifierNotFoundError(node)
+            return node.text
 
         if node.identifier_type[0] == 'function_call' and len(node.identifier_type[1]) == 0:
             return [node.text]

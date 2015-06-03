@@ -3,7 +3,7 @@ from antlr4.InputStream import InputStream
 
 from lactose.ast import AST
 from lactose.lisp_tree import LispTree
-from lactose.exception.errors import TooManySyntaxErrorException
+from lactose.exception.errors import TooManySyntaxErrorException, TooManySemanticErrorException
 from lactose.grammar.lactoseLexer import lactoseLexer
 from lactose.grammar.lactoseParser import lactoseParser
 from lactose.exception.error_listener import set_error_listener, get_error_listener
@@ -44,6 +44,8 @@ def get_ast_tree(filepath=None, string=None):
 
 def compile_to_string(ast_tree):
     tree = LispTree(ast_tree)
+    if tree.errors:
+        raise TooManySemanticErrorException(tree.errors)
     return '#lang r5rs\n' + str(tree)
 
 

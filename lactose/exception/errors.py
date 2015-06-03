@@ -19,9 +19,19 @@ class IdentifierNotFoundError(LactoseError):
         self.msg = "Identifier '{IDENT}' not found.".format(IDENT=node.text)
 
 
-class TooManySyntaxErrorException(Exception):
+class TooManyErrorException(Exception):
+    msg = ''
+
     def __init__(self, errors):
-        self.errors = errors
+        self.errors = errors        
 
     def __str__(self):
-        return 'Too many syntax errors: {NUM_OF_ERRORS}'.format(NUM_OF_ERRORS=self.errors)
+        return 'Too many {MSG} errors: {NUM_OF_ERRORS}'.format(NUM_OF_ERRORS=self.errors, MSG=self.msg)
+
+
+class TooManySemanticErrorException(TooManyErrorException):
+    msg = 'semantic'
+    
+
+class TooManySyntaxErrorException(TooManyErrorException):
+    msg = 'syntax'
