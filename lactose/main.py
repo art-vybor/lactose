@@ -16,7 +16,6 @@ def parse_args():
     parser.add_argument('-o', metavar='filename', dest='output_file', required=False,
                         help='output file (default: input_file with rkt extension)')
     parser.add_argument('--run', action='store_true', help='execute output_file')
-    parser.add_argument('--format', action='store_true', help='apply lisp formatter to output file')
 
     group = parser.add_argument_group('debug mode')
     group.add_argument('--stack_trace', action='store_true', help='enable stack trace printing')
@@ -28,9 +27,6 @@ def parse_args():
 
     if not args.output_file:
         args.output_file = replace_filename_extension(args.input_file, 'rkt')
-
-    if args.format:
-        print 'format functionality not released yet'
 
     return args
 

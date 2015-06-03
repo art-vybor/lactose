@@ -41,18 +41,13 @@ class LispTree():
         assert node.name == 'function_arguments', 'node is %s' % node
         return [self.parse_IDENTIFIER(child) for child in node.children]
 
-    # function_body: function_body_token (';' function_body_token)*;
-    # function_body_token: function_define | expression;
+    # function_body: expression (';' expression)*;
     def parse_function_body(self, node):
         assert node.name == 'function_body', 'node is %s' % node
         function_body = []
         for child in node.children:
-            if child.name == 'function_body_token':
-                subchild = child.children[0]
-                if subchild.name == 'function_define':
-                    function_body.append(self.parse_function_define(subchild))
-                else: # expression
-                    function_body.append(self.parse_expression(subchild))
+            if child.name == 'expression':
+                function_body.append(self.parse_expression(child))
 
         return function_body
     

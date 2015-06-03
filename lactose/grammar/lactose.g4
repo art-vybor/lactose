@@ -31,8 +31,8 @@ if_condition: 'if' expression 'then' expression 'else' expression;
 
 function_define: 'def' IDENTIFIER function_arguments '=' function_body; 
 
-function_body: function_body_token (';' function_body_token)*;
-function_body_token: function_define | expression;
+function_body: expression (';' expression)*;
+//function_body_token: function_define | expression;
 function_arguments: IDENTIFIER*;
 
 lambda_function: '\\' function_arguments '->' function_body;
