@@ -50,8 +50,8 @@ class ExpressionTest(unittest.TestCase):
         test(self, tests)
 
     def test_operation(self):
-        tests = {'def main = 2==2': '#lang r5rs\n(define (main) (eq? 2 2))\n(main)',
-                 'def main = 2!=2': '#lang r5rs\n(define (main) ((lambda (x y) (not (eq? x y))) 2 2))\n(main)',
+        tests = {'def main = 2==2': '#lang r5rs\n(define (main) (= 2 2))\n(main)',
+                 'def main = 2!=2': '#lang r5rs\n(define (main) ((lambda (x y) (not (= x y))) 2 2))\n(main)',
                  'def main = 2**2': '#lang r5rs\n(define (main) (expt 2 2))\n(main)',
                  'def main = 2%2': '#lang r5rs\n(define (main) (remainder 2 2))\n(main)',
                  'def main = 2//2': '#lang r5rs\n(define (main) ((lambda (x y) (truncate (/ x y))) 2 2))\n(main)',
@@ -68,7 +68,7 @@ class ExpressionTest(unittest.TestCase):
         tests = {'def main = if #t then 1 else 2':
                     '#lang r5rs\n(define (main) (if #t 1 2))\n(main)',
                  'def main = if 2 == 3 then 1 - 1  else sin 1':
-                    '#lang r5rs\n(define (main) (if (eq? 2 3) (-1 1) (sin 1)))\n(main)',
+                    '#lang r5rs\n(define (main) (if (= 2 3) (-1 1) (sin 1)))\n(main)',
         }
         test(self, tests)
     
@@ -99,6 +99,12 @@ class ExpressionTest(unittest.TestCase):
                  'def main = (\ x->x) (sin 1)': '#lang r5rs\n(define (main) ((lambda (x) x) (sin 1)))\n(main)',
                  'def f = 1\ndef main = (\ x->x) f': '#lang r5rs\n(define (f) 1)\n(define (main) ((lambda (x) x) (f)))\n(main)',
                  'def main = (sin 1) + ((\ x->x) 4) + 2*3': '#lang r5rs\n(define (main) (+ (+ (sin 1) ((lambda (x) x) 4)) (* 2 3)))\n(main)',
+        }
+        test(self, tests)
+
+    def test_list_expression(self):
+        tests = {'def main = [1 2 3 4]': '#lang r5rs\n(define (main) (list 1 2 3 4))\n(main)',
+                 'def f x = x**2\n def main = [ (f 1) 2+2]': '#lang r5rs\n(define (f x) (expt x 2))\n(define (main) (list (f 1) (+ 2 2)))\n(main)',
         }
         test(self, tests)
 

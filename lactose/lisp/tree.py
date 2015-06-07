@@ -1,5 +1,5 @@
 from lactose.exception.errors import IdentifierNotFoundError
-from lactose.lisp.scheme_interface import scheme_operation, default_symbol_table
+from lactose.lisp.scheme_interface import scheme_operation, default_symbol_table, scheme_function
 from lactose.ast.symbol_table import get_identifier_type
 
 class LispTree():
@@ -29,7 +29,7 @@ class LispTree():
         else:
             body = self.parse_function_body(node.children[4])
 
-        if len(arguments) == 0: name = name[0] # kludge for fix IDENTIFIER and function_call priority
+        if len(arguments) == 0: name = name[0] # dirty hack for fix IDENTIFIER and function_call priority
 
         return ['define', [name]+arguments]+body
 
@@ -62,32 +62,30 @@ class LispTree():
 
         return function_body
     
-    # expression 
-    #     : expression '**' expression
-    #     | expression ('*'|'/'|'%'|'//') expression
-    #     | expression ('+'|'-') expression
-    #     | expression ('<<' | '>>') expression
-    #     | expression '&' expression
-    #     | expression '^' expression
-    #     | expression '|' expression
-    #     | expression 'and' expression
-    #     | expression 'or' expression
-    #     | expression ('<' | '<=' | '>' | '>=') expression
-    #     | expression ('==' | '!=') expression
-    #     | ('+'|'-') expression
-    #     | ('not'|'~') expression
+    # arithmetic_expression
+    #     : arithmetic_expression '**' arithmetic_expression
+    #     | arithmetic_expression ('*'|'/'|'%'|'//') arithmetic_expression
+    #     | arithmetic_expression ('+'|'-') arithmetic_expression
+    #     | arithmetic_expression ('<<' | '>>') arithmetic_expression
+    #     | arithmetic_expression '&' arithmetic_expression
+    #     | arithmetic_expression '^' arithmetic_expression
+    #     | arithmetic_expression '|' arithmetic_expression
+    #     | arithmetic_expression 'and' arithmetic_expression
+    #     | arithmetic_expression 'or' arithmetic_expression
+    #     | arithmetic_expression ('<' | '<=' | '>' | '>=') arithmetic_expression
+    #     | arithmetic_expression ('==' | '!=') arithmetic_expression
+    #     | ('+'|'-') arithmetic_expression
+    #     | ('not'|'~') arithmetic_expression
     #     | if_condition
     #     | token
     #     | IDENTIFIER
-    #     | lambda_function
     #     | function_call
     #     | lambda_function_call    
-    #     | '(' expression ')' 
-    #     | list_expression
+    #     | '(' arithmetic_expression ')'
     #     ;
-    def parse_expression(self, node):
-        self.node_assert(node, 'expression')
-
+    def parse_arithmetic_expression(self, node):
+        self.node_assert(node, 'arithmetic_expression')
+        
         children = node.children
         if children[0].name == 'if_condition':
             return self.parse_if_condition(children[0])
@@ -95,28 +93,40 @@ class LispTree():
             return self.parse_token(children[0])
         elif children[0].name == 'IDENTIFIER':
             return self.parse_IDENTIFIER(children[0])
-        elif children[0].name == 'lambda_function':
-            return self.parse_lambda_function(children[0])
         elif children[0].name == 'function_call':
             return self.parse_function_call(children[0])
         elif children[0].name == 'lambda_function_call':
             return self.parse_lambda_function_call(children[0])
-        elif children[0].name == 'list_expression':
-            return self.parse_list_expression(children[0])
         elif children[0].text == '(':
-            return self.parse_expression(children[1])
+            return self.parse_arithmetic_expression(children[1])
         elif children[0].text in ['+', '-', 'not', '~']:
             # unary
             operation = scheme_operation(children[0].text)
-            expr = self.parse_expression(children[1])
+            expr = self.parse_arithmetic_expression(children[1])
             return [operation, expr]
         else:
             # binary
-            expr_1 = self.parse_expression(children[0])
+            expr_1 = self.parse_arithmetic_expression(children[0])
             operation = scheme_operation(children[1].text)
-            expr_2 = self.parse_expression(children[2])
+            expr_2 = self.parse_arithmetic_expression(children[2])
             return [operation, expr_1, expr_2]
 
+    # expression 
+    #     : ariphmetic_expression
+    #     | lambda_function
+    #     | list_expression
+    #     ;    
+    def parse_expression(self, node):
+        self.node_assert(node, 'expression')
+
+        children = node.children
+        if children[0].name == 'arithmetic_expression':
+            return self.parse_arithmetic_expression(children[0])
+        elif children[0].name == 'lambda_function':
+            return self.parse_lambda_function(children[0])
+        else: # list_expression
+            return self.parse_list_expression(children[0])
+        
     # if_condition: 'if' expression 'then' expression 'else' expression;
     def parse_if_condition(self, node):
         self.node_assert(node, 'if_condition')
@@ -131,9 +141,7 @@ class LispTree():
         self.node_assert(node, 'function_call')
 
         identifier = self.parse_IDENTIFIER(node.children[0])
-        args = []
-        for child in node.children[1:]:
-            args.append(self.parse_expression(child))
+        args = [self.parse_expression(arg) for arg in node.children[1:]]
 
         return [identifier] + args
 
@@ -142,14 +150,18 @@ class LispTree():
         self.node_assert(node, 'lambda_function_call')
 
         lambda_func = self.parse_lambda_function(node.children[1])
-        args = []
-        for child in node.children[3:]:
-            args.append(self.parse_expression(child))
+        args = [self.parse_expression(arg) for arg in node.children[3:]]
+
         return [lambda_func] + args
 
     #list_expression: '[' expression* ']';
     def parse_list_expression(self, node):
         self.node_assert(node, 'list_expression')
+
+        list_expression = [self.parse_expression(expr) for expr in node.children[1:-1]]
+
+        return ['list'] + list_expression
+
 
     # token: BOOLEAN | NUMBER | CHARACTER | STRING;
     def parse_token(self, node):
@@ -166,7 +178,10 @@ class LispTree():
             self.errors += 1
             print IdentifierNotFoundError(node)
 
-        # kludge for fix IDENTIFIER and function_call priority
+        if ident_type[0] == 'function_call':
+            node.text = scheme_function(node.text)
+
+        # dirty hack for fix IDENTIFIER and function_call priority
         if ident_type[0] == 'function_call' and len(ident_type[1]) == 0:
             return [node.text]
 

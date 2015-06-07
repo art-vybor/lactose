@@ -14,10 +14,9 @@
 --    newline
 
  
-def f x = 1
-def main x = 
-    f (\x y->1);
-    def g x = {1}
+def main = 
+    def f x = {x};
+    display (f 1)
 --def main = 
 --    def f x = {display x; x**2};
 --    display 1

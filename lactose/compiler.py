@@ -6,7 +6,7 @@ from lactose.lisp.tree import LispTree
 from lactose.exception.errors import TooManySyntaxErrorException, TooManySemanticErrorException
 from lactose.grammar.lactoseLexer import lactoseLexer
 from lactose.grammar.lactoseParser import lactoseParser
-from lactose.exception.error_listener import set_error_listener, get_error_listener
+from lactose.exception.error_listener import set_error_listener, get_error_listener, reset_error_listener
 
 
 def get_lexer(StreamClass, data):
@@ -35,9 +35,11 @@ def get_ast_tree(filepath=None, string=None):
 
     parser = lactoseParser(stream)
     set_error_listener(parser)
-    tree = parser.parse()
-    if get_error_listener().errors:
-        raise TooManySyntaxErrorException(get_error_listener().errors)
+    tree = parser.parse()   
+    errors = get_error_listener().errors
+    reset_error_listener()
+    if errors:
+        raise TooManySyntaxErrorException(errors)
         
     return AST(tree)
 

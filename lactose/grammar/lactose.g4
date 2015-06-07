@@ -5,27 +5,31 @@ import r5rs_token;
 parse: function_define*;
 
 expression 
-    : expression '**' expression
-    | expression ('*'|'/'|'%'|'//') expression
-    | expression ('+'|'-') expression
-    | expression ('<<' | '>>') expression
-    | expression '&' expression
-    | expression '^' expression
-    | expression '|' expression
-    | expression 'and' expression
-    | expression 'or' expression
-    | expression ('<' | '<=' | '>' | '>=') expression
-    | expression ('==' | '!=') expression
-    | ('+'|'-') expression
-    | ('not'|'~') expression
+    : arithmetic_expression
+    | lambda_function
+    | list_expression
+    ;
+
+arithmetic_expression
+    : arithmetic_expression '**' arithmetic_expression
+    | arithmetic_expression ('*'|'/'|'%'|'//') arithmetic_expression
+    | arithmetic_expression ('+'|'-') arithmetic_expression
+    | arithmetic_expression ('<<' | '>>') arithmetic_expression
+    | arithmetic_expression '&' arithmetic_expression
+    | arithmetic_expression '^' arithmetic_expression
+    | arithmetic_expression '|' arithmetic_expression
+    | arithmetic_expression 'and' arithmetic_expression
+    | arithmetic_expression 'or' arithmetic_expression
+    | arithmetic_expression ('<' | '<=' | '>' | '>=') arithmetic_expression
+    | arithmetic_expression ('==' | '!=') arithmetic_expression
+    | ('+'|'-') arithmetic_expression
+    | ('not'|'~') arithmetic_expression
     | if_condition
     | token
     | IDENTIFIER
-    | lambda_function
     | function_call
     | lambda_function_call    
-    | '(' expression ')' 
-    | list_expression
+    | '(' arithmetic_expression ')'
     ;
 
 list_expression: '[' expression* ']';
