@@ -1,5 +1,6 @@
+
 def factorial = (\f -> \x -> f f x) \fact x -> if x == 0 then 1 else x*(fact fact x-1)
 
-def main=
+def main =
     display (factorial 5);
     newline

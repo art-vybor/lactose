@@ -33,7 +33,7 @@ R5RS standart: http://www.schemers.org/Documents/Standards/R5RS/r5rs.pdf
 
 ##error
 регистронезависимость в проверке видимости символов.
-тесты на вложенные функции
+протестить gitstats
 
 тело функции в {}
 Списки [a b c]

@@ -10,7 +10,9 @@ def init_symbol_table(ast_node):
 
 def add_symbol_information(ast_node):
     def get_symbol(name, ast_function_arguments):
-        return (name, [arg.text for arg in ast_function_arguments.children])
+        if name: # if function not lambda
+            name = name.lower()
+        return (name, [arg.text.lower() for arg in ast_function_arguments.children])
 
     # function_define: 'def' IDENTIFIER function_arguments '=' (function_body | '{' function_body '}'); 
     if ast_node.name == 'function_define':
@@ -41,7 +43,7 @@ def add_symbols_to_table(ast_node):
 
 
 def get_identifier_type(node):
-    identifier_text = node.text
+    identifier_text = node.text.lower()
     while node != None:
         if identifier_text in node.symbol_table:
             return ('function_call', node.symbol_table[identifier_text])

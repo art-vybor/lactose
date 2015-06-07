@@ -177,6 +177,7 @@ class LispTree():
         if not ident_type:
             self.errors += 1
             print IdentifierNotFoundError(node)
+            return node.text
 
         if ident_type[0] == 'function_call':
             node.text = scheme_function(node.text)
