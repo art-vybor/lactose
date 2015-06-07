@@ -14,7 +14,10 @@ def main =
     newline
 
  
-
+def main = 
+    def f x = {display x; x**2};
+    display 1;
+    a
 
 
 --def main = (\ f -> f 1) (\ x -> 1)
