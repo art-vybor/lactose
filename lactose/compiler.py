@@ -1,7 +1,7 @@
 from antlr4 import FileStream, CommonTokenStream
 from antlr4.InputStream import InputStream
 
-from lactose.ast import AST
+from lactose.ast.tree import AST
 from lactose.lisp_tree import LispTree
 from lactose.exception.errors import TooManySyntaxErrorException, TooManySemanticErrorException
 from lactose.grammar.lactoseLexer import lactoseLexer
