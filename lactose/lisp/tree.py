@@ -1,11 +1,13 @@
 from lactose.exception.errors import IdentifierNotFoundError
+from lactose.lisp.scheme_interface import scheme_operation, default_symbol_table
+
 
 class LispTree():
     def __init__(self, ast_tree):
         self.main = 'main' in ast_tree.root.symbol_table
         self.errors = 0
 
-        ast_tree.root.symbol_table.update(get_default_symbol_table())
+        ast_tree.root.symbol_table.update(default_symbol_table)
 
         self.tree = self.parse(ast_tree.root)
 
@@ -94,13 +96,13 @@ class LispTree():
             return self.parse_expression(children[1])
         elif children[0].text in ['+', '-', 'not', '~']:
             # unary
-            operation = get_scheme_operation(children[0].text)
+            operation = scheme_operation(children[0].text)
             expr = self.parse_expression(children[1])
             return [operation, expr]
         else:
             # binary
             expr_1 = self.parse_expression(children[0])
-            operation = get_scheme_operation(children[1].text)
+            operation = scheme_operation(children[1].text)
             expr_2 = self.parse_expression(children[2])
             return [operation, expr_1, expr_2]
 
@@ -166,33 +168,3 @@ class LispTree():
 
     def __str__(self):
         return self.tree_to_str(self.tree)
-
-
-def get_scheme_operation(operation):
-    python_to_scheme_operation = {
-        '==': 'eq?',
-        '!=': '(lambda (x y) (not (eq? x y)))',
-        '**': 'expt',
-        '%':  'remainder',
-        '//': '(lambda (x y) (truncate (/ x y)))',
-        '&':  'bitwise-and',
-        '|':  'bitwise-ior',
-        '^':  'bitwise-xor',
-        '~':  'bitwise-not',
-        '<<': 'arithmetic-shift',
-        '>>': '(lambda (x y) (arithmetic-shift x (- y)))',
-    }
-
-    if operation in python_to_scheme_operation:
-        return python_to_scheme_operation[operation]
-    return operation
-
-
-def get_default_symbol_table():
-    return {'sin':['x'],
-            'main':[],
-            'display':['x'],
-            'newline':[],
-            'sqrt':['x'],
-            'floor':['x'],
-            'write':['']}
