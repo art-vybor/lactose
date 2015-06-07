@@ -1,6 +1,6 @@
 from lactose.exception.errors import IdentifierNotFoundError
 from lactose.lisp.scheme_interface import scheme_operation, default_symbol_table
-
+from lactose.ast.symbol_table import get_identifier_type
 
 class LispTree():
     def __init__(self, ast_tree):
@@ -13,28 +13,29 @@ class LispTree():
 
     # parse: function_define*;
     def parse(self, node):
-        assert node.name == 'parse', 'node is %s' % node
+        self.node_assert(node, 'parse')
         return [self.parse_function_define(child) for child in node.children]
 
-    # function_define: 'def' IDENTIFIER function_arguments '=' function_body;
-    # function_define_default: ;
+    # function_define: 'def' IDENTIFIER function_arguments '=' (function_body | '{' function_body '}');
     def parse_function_define(self, node):
-        assert node.name == 'function_define', 'node is %s' % node
+        self.node_assert(node, 'function_define')
 
         name = self.parse_IDENTIFIER(node.children[1])
 
         arguments = self.parse_function_arguments(node.children[2])
-        body = self.parse_function_body(node.children[4])
 
-        if len(arguments) == 0: name = name[0]
+        if node.children[-1].text == '}':
+            body = self.parse_function_body(node.children[5])
+        else:
+            body = self.parse_function_body(node.children[4])
+
+        if len(arguments) == 0: name = name[0] # kludge for fix IDENTIFIER and function_call priority
+
         return ['define', [name]+arguments]+body
 
-    # lambda_function: '(' lambda_function ')' | '\\' function_arguments '->' function_body;
+    # lambda_function: '\\' function_arguments '->' function_body;
     def parse_lambda_function(self, node):
-        assert node.name == 'lambda_function', 'node is %s' % node
-
-        if node.children[0].text == '(': 
-            return self.parse_lambda_function(node.children[1])
+        self.node_assert(node, 'lambda_function')
 
         arguments = self.parse_function_arguments(node.children[1])
         body = self.parse_function_body(node.children[3])        
@@ -42,42 +43,50 @@ class LispTree():
     
     # function_arguments: IDENTIFIER*;
     def parse_function_arguments(self, node):
-        assert node.name == 'function_arguments', 'node is %s' % node
+        self.node_assert(node, 'function_arguments')
         return [self.parse_IDENTIFIER(child) for child in node.children]
 
-    # function_body: expression (';' expression)*;
+    # function_body: function_body_token (';' function_body_token)*;
+    # function_body_token: function_define | expression;
     def parse_function_body(self, node):
-        assert node.name == 'function_body', 'node is %s' % node
+        self.node_assert(node, 'function_body')
+
         function_body = []
         for child in node.children:
-            if child.name == 'expression':
-                function_body.append(self.parse_expression(child))
+            if child.name == 'function_body_token':
+                token = child.children[0]
+                if token.name == 'expression':
+                    function_body.append(self.parse_expression(token))
+                elif token.name == 'function_define':
+                    function_body.append(self.parse_function_define(token))
 
         return function_body
     
     # expression 
-    # : '(' expression ')' 
-    # | if_condition
-    # | ('+'|'-') expression
-    # | ('not'|'~') expression
-    # | expression '**' expression
-    # | expression ('*'|'/'|'%'|'//') expression
-    # | expression ('+'|'-') expression
-    # | expression ('<<' | '>>') expression
-    # | expression '&' expression
-    # | expression '^' expression
-    # | expression '|' expression
-    # | expression 'and' expression
-    # | expression 'or' expression
-    # | expression ('<' | '<=' | '>' | '>=') expression
-    # | expression ('==' | '!=') expression
-    # | token
-    # | IDENTIFIER
-    # | lambda_function
-    # | function_call
-    # | lambda_function_call;
+    #     : expression '**' expression
+    #     | expression ('*'|'/'|'%'|'//') expression
+    #     | expression ('+'|'-') expression
+    #     | expression ('<<' | '>>') expression
+    #     | expression '&' expression
+    #     | expression '^' expression
+    #     | expression '|' expression
+    #     | expression 'and' expression
+    #     | expression 'or' expression
+    #     | expression ('<' | '<=' | '>' | '>=') expression
+    #     | expression ('==' | '!=') expression
+    #     | ('+'|'-') expression
+    #     | ('not'|'~') expression
+    #     | if_condition
+    #     | token
+    #     | IDENTIFIER
+    #     | lambda_function
+    #     | function_call
+    #     | lambda_function_call    
+    #     | '(' expression ')' 
+    #     | list_expression
+    #     ;
     def parse_expression(self, node):
-        assert node.name == 'expression', 'node is %s' % node
+        self.node_assert(node, 'expression')
 
         children = node.children
         if children[0].name == 'if_condition':
@@ -92,6 +101,8 @@ class LispTree():
             return self.parse_function_call(children[0])
         elif children[0].name == 'lambda_function_call':
             return self.parse_lambda_function_call(children[0])
+        elif children[0].name == 'list_expression':
+            return self.parse_list_expression(children[0])
         elif children[0].text == '(':
             return self.parse_expression(children[1])
         elif children[0].text in ['+', '-', 'not', '~']:
@@ -108,7 +119,7 @@ class LispTree():
 
     # if_condition: 'if' expression 'then' expression 'else' expression;
     def parse_if_condition(self, node):
-        assert node.name == 'if_condition', 'node is %s' % node
+        self.node_assert(node, 'if_condition')
 
         expr_1 = self.parse_expression(node.children[1])
         expr_2 = self.parse_expression(node.children[3])
@@ -117,7 +128,7 @@ class LispTree():
 
     # function_call: IDENTIFIER expression*;
     def parse_function_call(self, node):
-        assert node.name == 'function_call', 'node is %s' % node
+        self.node_assert(node, 'function_call')
 
         identifier = self.parse_IDENTIFIER(node.children[0])
         args = []
@@ -128,7 +139,7 @@ class LispTree():
 
     # lambda_function_call: '(' lambda_function ')' expression*;
     def parse_lambda_function_call(self, node):
-        assert node.name == 'lambda_function_call', 'node is %s' % node
+        self.node_assert(node, 'lambda_function_call')
 
         lambda_func = self.parse_lambda_function(node.children[1])
         args = []
@@ -136,25 +147,33 @@ class LispTree():
             args.append(self.parse_expression(child))
         return [lambda_func] + args
 
-    # token: IDENTIFIER | BOOLEAN | NUMBER | CHARACTER | STRING;
+    #list_expression: '[' expression* ']';
+    def parse_list_expression(self, node):
+        self.node_assert(node, 'list_expression')
+
+    # token: BOOLEAN | NUMBER | CHARACTER | STRING;
     def parse_token(self, node):
-        assert node.name == 'token', 'node is %s' % node
+        self.node_assert(node, 'token')
         return node.children[0].text
 
     # IDENTIFIER
     def parse_IDENTIFIER(self, node):
-        assert node.name == 'IDENTIFIER', 'node is %s' % node
-        node.init_identifier()
+        self.node_assert(node, 'IDENTIFIER')
 
-        if not node.identifier_type:
+        ident_type = get_identifier_type(node)
+
+        if not ident_type:
             self.errors += 1
             print IdentifierNotFoundError(node)
-            return node.text
 
-        if node.identifier_type[0] == 'function_call' and len(node.identifier_type[1]) == 0:
+        # kludge for fix IDENTIFIER and function_call priority
+        if ident_type[0] == 'function_call' and len(ident_type[1]) == 0:
             return [node.text]
 
         return node.text
+
+    def node_assert(self, node, expected_type):
+        assert node.name == expected_type, 'Node is %s, but %s expected.' % (node, expected_type)
 
     def tree_to_str(self, tree, root=True):
         def f(x):

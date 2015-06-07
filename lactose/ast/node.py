@@ -1,4 +1,3 @@
-from lactose.ast.symbol_table import get_identifier_type
 
 class ASTNode:
     def __init__(self, index):
@@ -10,7 +9,6 @@ class ASTNode:
         self.antlr_node = None
 
         self.parent = None
-        self.identifier_type = None
 
         self.symbol_table = {}
         self.symbol = None #(symbol, args)
@@ -32,6 +30,3 @@ class ASTNode:
 
     def add_child(self, child):
         self.children.append(child)
-
-    def init_identifier(self):
-        self.identifier_type = get_identifier_type(self)

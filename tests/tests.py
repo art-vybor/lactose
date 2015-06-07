@@ -47,6 +47,21 @@ class ExpressionTest(unittest.TestCase):
                  'def main = (2+2)*2': '#lang r5rs\n(define (main) (* (+ 2 2) 2))\n(main)',
                  'def main = ((2+2)*2)': '#lang r5rs\n(define (main) (* (+ 2 2) 2))\n(main)',
         }
+        test(self, tests)
+
+    def test_operation(self):
+        tests = {'def main = 2==2': '#lang r5rs\n(define (main) (eq? 2 2))\n(main)',
+                 'def main = 2!=2': '#lang r5rs\n(define (main) ((lambda (x y) (not (eq? x y))) 2 2))\n(main)',
+                 'def main = 2**2': '#lang r5rs\n(define (main) (expt 2 2))\n(main)',
+                 'def main = 2%2': '#lang r5rs\n(define (main) (remainder 2 2))\n(main)',
+                 'def main = 2//2': '#lang r5rs\n(define (main) ((lambda (x y) (truncate (/ x y))) 2 2))\n(main)',
+                 'def main = 2&2': '#lang r5rs\n(define (main) (bitwise-and 2 2))\n(main)',
+                 'def main = 2|2': '#lang r5rs\n(define (main) (bitwise-ior 2 2))\n(main)',
+                 'def main = 2^2': '#lang r5rs\n(define (main) (bitwise-xor 2 2))\n(main)',
+                 'def main = ~2': '#lang r5rs\n(define (main) (bitwise-not 2))\n(main)',
+                 'def main = 2<<2': '#lang r5rs\n(define (main) (arithmetic-shift 2 2))\n(main)',
+                 'def main = 2>>2': '#lang r5rs\n(define (main) ((lambda (x y) (arithmetic-shift x (- y))) 2 2))\n(main)',
+        }
         test(self, tests)        
 
     def test_condition(self):

@@ -35,8 +35,6 @@ def add_symbols_to_table(ast_node):
         if function_body.text == '}':
             function_body = ast_node.children[-2]
 
-        print map(lambda x: x.symbol, function_body.children)
-
         for child in function_body.children: #child is unction_body_token or ';'
             if child.children and child.children[0].name == 'function_define': 
                 ast_node.add_symbol_to_table(child.children[0].symbol)

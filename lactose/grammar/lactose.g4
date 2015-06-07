@@ -32,8 +32,7 @@ list_expression: '[' expression* ']';
 
 if_condition: 'if' expression 'then' expression 'else' expression;
 
-function_define: 'def' IDENTIFIER function_arguments '=' (function_body | '{' function_body '}'); 
-
+function_define: 'def' IDENTIFIER function_arguments '=' (function_body | '{' function_body '}');
 function_body: function_body_token (';' function_body_token)*;
 function_body_token: function_define | expression;
 function_arguments: IDENTIFIER*;
