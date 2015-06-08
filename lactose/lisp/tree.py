@@ -11,24 +11,33 @@ class LispTree():
 
         self.tree = self.parse(ast_tree.root)
 
-    # parse: function_define*;
+    # parse: (function_define | scheme_block)*;
     def parse(self, node):
+        def parse_by_type(node):
+            if node.name == 'function_define': return self.parse_function_define(node)
+            else: return self.parse_scheme_block(node)
         self.node_assert(node, 'parse')
-        return [self.parse_function_define(child) for child in node.children]
+        return [parse_by_type(child) for child in node.children]
+
+    # scheme_block: SCHEME_BLOCK_BODY 'export' IDENTIFIER*;
+    def parse_scheme_block(self, node):
+        self.node_assert(node, 'scheme_block')
+        return self.parse_SCHEME_BLOCK_BODY(node.children[0])
+
+    # SCHEME_BLOCK_BODY: '{{' ~[}]* '}}';
+    def parse_SCHEME_BLOCK_BODY(self, node):
+        self.node_assert(node, 'SCHEME_BLOCK_BODY')
+        return node.text[2:-2]
 
     # function_define: 'def' IDENTIFIER function_arguments '=' (function_body | '{' function_body '}');
     def parse_function_define(self, node):
         self.node_assert(node, 'function_define')
 
         name = self.parse_IDENTIFIER(node.children[1])
-
         arguments = self.parse_function_arguments(node.children[2])
-
-        if node.children[-1].text == '}':
-            body = self.parse_function_body(node.children[5])
-        else:
-            body = self.parse_function_body(node.children[4])
-
+        body_token_index = 5 if node.children[-1].text == '}' else 4
+        body = self.parse_function_body(node.children[body_token_index])
+        
         if len(arguments) == 0: name = name[0] # dirty hack for fix IDENTIFIER and function_call priority
 
         return ['define', [name]+arguments]+body

@@ -39,15 +39,19 @@ lactose_to_scheme_function = {
 }
 
 default_symbol_table = {
-    'sin':['x'],
     'main':[],
-    'display':['x'],
-    'newline':[],
-    'sqrt':['x'],
+    # math
+    'sin':['x'],
     'floor':['x'],
-    'write':['x'],
+    'sqrt':['x'],
 
-    #lists
+    # io
+    'display':['x'],
+    'newline':[],    
+    'write':['x'],
+    'read':[],
+
+    # lists
     'len': ['lst'],
     'concat': ['lst', '...'],
     'tail': ['lst', 'pos'],

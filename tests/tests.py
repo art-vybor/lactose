@@ -65,10 +65,10 @@ class ExpressionTest(unittest.TestCase):
         test(self, tests)        
 
     def test_condition(self):
-        tests = {'def main = if #t then 1 else 2':
-                    '#lang r5rs\n(define (main) (if #t 1 2))\n(main)',
-                 'def main = if 2 == 3 then 1 - 1  else sin 1':
-                    '#lang r5rs\n(define (main) (if (= 2 3) (-1 1) (sin 1)))\n(main)',
+        tests = {'{{}} export sin x def main = if #t then 1 else 2':
+                    '#lang r5rs\n\n(define (main) (if #t 1 2))\n(main)',
+                 '{{}} export sin x def main = if 2 == 3 then 1 - 1  else sin 1':
+                    '#lang r5rs\n\n(define (main) (if (= 2 3) (-1 1) (sin 1)))\n(main)',
         }
         test(self, tests)
     
@@ -76,7 +76,7 @@ class ExpressionTest(unittest.TestCase):
         tests = {'def f = 1': '#lang r5rs\n(define (f) 1)',
                  'def f = 1;2': '#lang r5rs\n(define (f) 1 2)',
                  'def f x = x': '#lang r5rs\n(define (f x) x)',
-                 'def f x = sin x': '#lang r5rs\n(define (f x) (sin x))',
+                 'def f x = x**2': '#lang r5rs\n(define (f x) (expt x 2))',
                  'def f x y = x+y': '#lang r5rs\n(define (f x y) (+ x y))',
                  'def f x y = (x+y)': '#lang r5rs\n(define (f x y) (+ x y))',
                  'def f x y = x+y**2': '#lang r5rs\n(define (f x y) (+ x (expt y 2)))',
@@ -96,9 +96,9 @@ class ExpressionTest(unittest.TestCase):
     def test_lambda_function_call(self):
         tests = {'def main = (\->1)': '#lang r5rs\n(define (main) ((lambda () 1)))\n(main)',
                  'def main = (\ x->x) 2': '#lang r5rs\n(define (main) ((lambda (x) x) 2))\n(main)',
-                 'def main = (\ x->x) (sin 1)': '#lang r5rs\n(define (main) ((lambda (x) x) (sin 1)))\n(main)',
+                 'def main = (\ x->x) 1+1': '#lang r5rs\n(define (main) ((lambda (x) x) (+ 1 1)))\n(main)',
                  'def f = 1\ndef main = (\ x->x) f': '#lang r5rs\n(define (f) 1)\n(define (main) ((lambda (x) x) (f)))\n(main)',
-                 'def main = (sin 1) + ((\ x->x) 4) + 2*3': '#lang r5rs\n(define (main) (+ (+ (sin 1) ((lambda (x) x) 4)) (* 2 3)))\n(main)',
+                 'def main = (1+1) + ((\ x->x) 4) + 2*3': '#lang r5rs\n(define (main) (+ (+ (+1 1) ((lambda (x) x) 4)) (* 2 3)))\n(main)',
         }
         test(self, tests)
 

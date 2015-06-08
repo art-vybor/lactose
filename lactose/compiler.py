@@ -34,8 +34,10 @@ def get_ast_tree(filepath=None, string=None):
     stream = CommonTokenStream(lexer)
 
     parser = lactoseParser(stream)
+    
     set_error_listener(parser)
-    tree = parser.parse()   
+    tree = parser.parse()
+
     errors = get_error_listener().errors
     reset_error_listener()
     if errors:

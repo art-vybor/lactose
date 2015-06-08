@@ -14,7 +14,11 @@ def add_symbol_information(ast_node):
             name = name.lower()
         return (name, [arg.text.lower() for arg in ast_function_arguments.children])
 
-    # function_define: 'def' IDENTIFIER function_arguments '=' (function_body | '{' function_body '}'); 
+    # scheme_block: SCHEME_BLOCK_BODY 'export' IDENTIFIER function_arguments;
+    if ast_node.name == 'scheme_block':
+        ast_node.symbol = get_symbol(ast_node.children[2].text, ast_node.children[3])
+
+    # function_define: 'def' IDENTIFIER function_arguments '=' (function_body | '{' function_body '}');
     if ast_node.name == 'function_define':
         ast_node.symbol = get_symbol(ast_node.children[1].text, ast_node.children[2])
 
@@ -24,12 +28,12 @@ def add_symbol_information(ast_node):
 
 
 def add_symbols_to_table(ast_node):
-    #parse: function_define*;
+    # parse: (function_define | scheme_block)*;
     if ast_node.name == 'parse':
-        for function_define in ast_node.children:
-            ast_node.add_symbol_to_table(function_define.symbol)
+        for child in ast_node.children:
+            ast_node.add_symbol_to_table(child.symbol)
 
-    # function_define: 'def' IDENTIFIER function_arguments '=' (function_body | '{' function_body '}'); 
+    # function_define: 'def' IDENTIFIER function_arguments '=' (function_body | '{' function_body '}');
     # function_body: function_body_token (';' function_body_token)*;
     # function_body_token: function_define | expression;
     if ast_node.name == 'function_define':

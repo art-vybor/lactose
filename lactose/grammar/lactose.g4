@@ -2,7 +2,7 @@ grammar lactose;
 
 import r5rs_token;
 
-parse: function_define*;
+parse: (function_define | scheme_block)*;
 
 expression 
     : arithmetic_expression
@@ -46,7 +46,8 @@ lambda_function: '\\' function_arguments '->' function_body;
 function_call: IDENTIFIER expression*;
 lambda_function_call: '(' lambda_function ')' expression*;
 
-//insert_scheme: 
+scheme_block: SCHEME_BLOCK_BODY 'export' IDENTIFIER function_arguments;
+SCHEME_BLOCK_BODY: '{{' ~[}]* '}}';
 
 COMMENT:  '--' ~( [\n] )* -> skip;
 SPACES: [ \t\n]+ -> skip;
