@@ -4,12 +4,15 @@ from subprocess import call
 
 from lactose.grammar.lactoseParser import lactoseParser
 from lactose.ast.symbol_table import init_symbol_table
+from lactose.lisp.scheme_interface import default_symbol_table
 from lactose.ast.node import ASTNode
     
 class AST:
     def __init__(self, antlr_tree):
         self.root = self.parse(antlr_tree)
-        init_symbol_table(self.root)
+        self.root.symbol_table.update(default_symbol_table)
+        self.errors = init_symbol_table(self.root)
+
 
     def parse(self, antlr_tree):
         self.index = 0

@@ -42,14 +42,19 @@ def get_ast_tree(filepath=None, string=None):
     reset_error_listener()
     if errors:
         raise TooManySyntaxErrorException(errors)
-        
-    return AST(tree)
+    
+    ast = AST(tree)
+
+    if ast.errors:
+        pass
+        #raise TooManySemanticErrorException(ast.errors)
+
+    return ast
 
 
 def compile_to_string(ast_tree):
     tree = LispTree(ast_tree)
-    if tree.errors:
-        raise TooManySemanticErrorException(tree.errors)
+    
     return '#lang r5rs\n' + str(tree)
 
 

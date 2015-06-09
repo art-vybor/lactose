@@ -13,6 +13,8 @@ class ASTNode:
         self.symbol_table = {}
         self.symbol = None #(symbol, args)
 
+        self.ident_type = None
+
     def __str__(self):
         if self.terminal:
             return "{TYPE} '{TEXT}'".format(TYPE=self.name, TEXT=self.text,)
@@ -27,6 +29,11 @@ class ASTNode:
     def add_symbol_to_table(self, symbol):
         name, args = symbol
         self.symbol_table[name]=args
+
+    def add_arguments_to_table(self):
+        if self.symbol:
+            for arg in self.symbol[1]:
+                self.add_symbol_to_table((arg, None))
 
     def add_child(self, child):
         self.children.append(child)

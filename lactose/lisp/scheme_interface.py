@@ -36,10 +36,11 @@ lactose_to_scheme_function = {
                      '()
                      (cons (car l) (head head (cdr l) (- n 1))))))""",
     'ref': 'list-ref',
+    'concat_str': 'string-append',
 }
 
 default_symbol_table = {
-    'main':[],
+    #'main':[],
     # math
     'sin':['x'],
     'floor':['x'],
@@ -50,6 +51,9 @@ default_symbol_table = {
     'newline':[],    
     'write':['x'],
     'read':[],
+
+    # string
+    'concat_str':['str', '...'],
 
     # lists
     'len': ['lst'],

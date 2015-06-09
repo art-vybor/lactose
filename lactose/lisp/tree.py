@@ -1,14 +1,10 @@
-from lactose.exception.errors import IdentifierNotFoundError
-from lactose.lisp.scheme_interface import scheme_operation, default_symbol_table, scheme_function
-from lactose.ast.symbol_table import get_identifier_type
+#from lactose.exception.errors import IdentifierNotFoundError
+from lactose.lisp.scheme_interface import scheme_operation, scheme_function
+#from lactose.ast.symbol_table import get_identifier_type
 
 class LispTree():
     def __init__(self, ast_tree):
         self.main = 'main' in ast_tree.root.symbol_table
-        self.errors = 0
-
-        ast_tree.root.symbol_table.update(default_symbol_table)
-
         self.tree = self.parse(ast_tree.root)
 
     # parse: (function_define | scheme_block)*;
@@ -34,6 +30,7 @@ class LispTree():
         self.node_assert(node, 'function_define')
 
         name = self.parse_IDENTIFIER(node.children[1])
+
         arguments = self.parse_function_arguments(node.children[2])
         body_token_index = 5 if node.children[-1].text == '}' else 4
         body = self.parse_function_body(node.children[body_token_index])
@@ -181,18 +178,18 @@ class LispTree():
     def parse_IDENTIFIER(self, node):
         self.node_assert(node, 'IDENTIFIER')
 
-        ident_type = get_identifier_type(node)
+        # ident_type = get_identifier_type(node)
 
-        if not ident_type:
-            self.errors += 1
-            print IdentifierNotFoundError(node)
-            return node.text
+        # if not ident_type:
+        #     self.errors += 1
+        #     print IdentifierNotFoundError(node)
+        #     return node.text
 
-        if ident_type[0] == 'function_call':
+        if node.ident_type[0] == 'function_call':
             node.text = scheme_function(node.text)
 
         # dirty hack for fix IDENTIFIER and function_call priority
-        if ident_type[0] == 'function_call' and len(ident_type[1]) == 0:
+        if node.ident_type[0] == 'function_call' and len(node.ident_type[1]) == 0:
             return [node.text]
 
         return node.text

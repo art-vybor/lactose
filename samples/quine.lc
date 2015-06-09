@@ -1,2 +1,2 @@
-def main = display program; write program; newline
-def program = "def main = display program; write program; newline\ndef program = "
+def a = ["def a = " "\ndef main = display (ref a 0); display \"[\"; write (ref a 0); display \" \"; write (ref a 1); display \"]\"; display (ref a 1)"]
+def main = display (ref a 0); display "["; write (ref a 0); display " "; write (ref a 1); display "]"; display (ref a 1)

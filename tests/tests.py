@@ -61,9 +61,9 @@ class ExpressionTest(unittest.TestCase):
         test(self, tests)        
 
     def test_condition(self):
-        tests = {'{{}} export sin x def main = if #t then 1 else 2':
+        tests = {'{{}} export sin _ def main = if #t then 1 else 2':
                     '#lang r5rs\n\n(define (main) (if #t 1 2))\n(main)',
-                 '{{}} export sin x def main = if 2 == 3 then 1 - 1  else sin 1':
+                 '{{}} export sin _ def main = if 2 == 3 then 1 - 1  else sin 1':
                     '#lang r5rs\n\n(define (main) (if (= 2 3) (-1 1) (sin 1)))\n(main)',
         }
         test(self, tests)
