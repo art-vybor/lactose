@@ -10,10 +10,6 @@ def compile_from_string_to_string(string):
     ast_tree = get_ast_tree(string=string)
     return compile_to_string(ast_tree)
 
-def get_lactose_program(string):
-    return '#lang r5rs\n' + string + 'main'
-
-
 def test(self, tests):
     for lactose, scheme in tests.iteritems():
         scheme_generated = compile_from_string_to_string(lactose)

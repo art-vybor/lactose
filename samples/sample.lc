@@ -1,8 +1,11 @@
 --sandbox
 
 {{}} export car _
+{{(define (print_sqr x) (display (expt x 2)))}} export print_sqr _
 
 def main =
     display (car [1 2 3]);
+    newline;
+    print_sqr 3;
     newline
  

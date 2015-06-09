@@ -7,7 +7,7 @@
                  (if (= n 0)
                      '()
                      (cons (car l) (head head (cdr l) (- n 1)))))) (list-tail lst start) (- end start)))
-(define (sort l) (define (doit l) (define (pivot) (list-ref l 0)) (define (left) (filter (lambda (x) (< x (pivot))) l)) (define (center) (filter (lambda (x) (= x (pivot))) l)) (define (right) (filter (lambda (x) (> x (pivot))) l)) (append (sort (left)) (center) (sort (right)))) (if ((lambda (x y) (not (= x y))) (length l) 0) (doit l) (list)))
+(define (sort l) (if ((lambda (x y) (not (= x y))) (length l) 0) (doit l) (list)) (define (doit l) (define (pivot) (list-ref l 0)) (define (left) (filter (lambda (x) (< x (pivot))) l)) (define (center) (filter (lambda (x) (= x (pivot))) l)) (define (right) (filter (lambda (x) (> x (pivot))) l)) (append (sort (left)) (center) (sort (right)))))
 (define (filter proc lst) (define (filter_sub lst n) (if (= (length lst) n) lst (if (proc (list-ref lst n)) (filter_sub lst (+ n 1)) (filter_sub (append (((lambda (f)
                  (lambda (x y)
                    (f f x y)))
