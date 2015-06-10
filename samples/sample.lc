@@ -16,3 +16,9 @@ def fact n =
 def main =
     display (fact 5)
  --
+
+ --def main = 
+ --   display (
+ --       (\f -> f 3) \x -> x**2
+ --   );
+ --   newline
