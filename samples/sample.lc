@@ -9,12 +9,18 @@
 --    print_sqr 3;
 --    newline
 
-def fact n = 
-    def loop i = {if i < n then i*loop(i+1) else n};
-    loop 1
+def abs a = if a >= 0 then a else -a
 
-def main =
-    display (fact 5)
+def main = 
+    display (abs -2)
+
+
+--def fact n = 
+--    def loop i = {if i < n then i*loop(i+1) else n};
+--    loop 1
+
+--def main =
+--    display (fact 5)
  --
 
  --def main = 
