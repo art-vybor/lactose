@@ -46,8 +46,7 @@ def get_ast_tree(filepath=None, string=None):
     ast = AST(tree)
 
     if ast.errors:
-        pass
-        #raise TooManySemanticErrorException(ast.errors)
+        raise TooManySemanticErrorException(ast.errors)
 
     return ast
 

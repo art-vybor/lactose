@@ -1,5 +1,4 @@
 #lang r5rs
-
-(define (print_sqr x) (display (expt x 2)))
-(define (main) (display (car (list 1 2 3))) (newline) (print_sqr 3) (newline))
+(define (fact n) (define (loop i) (if (< i n) (* i (loop (+ i 1))) n)) (loop 1))
+(define (main) (display (fact 5)))
 (main)
