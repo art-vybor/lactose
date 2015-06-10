@@ -5,12 +5,14 @@ def sublist lst start end =
     take (tail lst start) end-start
 
 def filter proc lst = 
-    def filter_sub lst n = {
-        if (len lst) == n then lst
-        else if proc (ref lst n) then filter_sub lst n+1
-        else filter_sub (concat (take lst n) (tail lst n+1)) n
-    };
-    filter_sub lst 0
+    def loop lst n = {
+        if (len lst) == n then 
+            lst
+        else if proc (ref lst n) 
+            then loop lst n+1
+        else 
+            loop (concat (take lst n) (tail lst n+1)) n};
+    loop lst 0
 
 def sort l = 
     def doit l = {
